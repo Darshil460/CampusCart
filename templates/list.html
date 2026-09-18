@@ -1,383 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Shopping List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
+    <title>Shopping List</title>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+            background: linear-gradient(180deg, #f8fbff, #eef6ff);
+            padding: 32px;
+        }
 
-body{
-    background:#F4F6F8;
-    padding:30px;
-}
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+        }
 
-/* ---------- HEADER ---------- */
+        .store {
+            background: rgba(255, 255, 255, 0.82);
+            padding: 22px;
+            border-radius: 24px;
+            margin-top: 24px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+        }
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:35px;
-    flex-wrap:wrap;
-    gap:15px;
-}
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-top: 1px solid #eef2ff;
+        }
 
-.back-button{
-    text-decoration:none;
-    color:white;
-    background:#2563EB;
-    padding:10px 18px;
-    border-radius:10px;
-    font-weight:bold;
-}
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.back-button:hover{
-    background:#1D4ED8;
-}
+        .circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: grid;
+            place-items: center;
+            color: #2563eb;
+            font-weight: 700;
+            text-decoration: none;
+        }
 
-.title-section h1{
-    color:#16A34A;
-    font-size:36px;
-}
+        .remove {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 8px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 12px;
+        }
 
-.title-section p{
-    color:#666;
-    margin-top:5px;
-}
-
-/* ---------- SUMMARY ---------- */
-
-.summary-card{
-    background:white;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom:30px;
-}
-
-.summary-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.summary-total{
-    color:#16A34A;
-    font-size:28px;
-    font-weight:bold;
-}
-
-/* ---------- STORE CARDS ---------- */
-
-.store-card{
-    background:white;
-    border-radius:18px;
-    padding:22px;
-    margin-bottom:24px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-}
-
-.enzo{
-    border-left:8px solid #16A34A;
-}
-
-.balaji{
-    border-left:8px solid #2563EB;
-}
-
-.qblock{
-    border-left:8px solid #EA580C;
-}
-
-.store-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
-}
-
-.store-name{
-    font-size:24px;
-    font-weight:bold;
-}
-
-.store-count{
-    background:#DCFCE7;
-    color:#166534;
-    padding:6px 12px;
-    border-radius:20px;
-    font-weight:bold;
-}
-
-/* ---------- ITEM ROW ---------- */
-
-.item-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px 0;
-    border-bottom:1px solid #E5E7EB;
-}
-
-.item-row:last-child{
-    border-bottom:none;
-}
-
-.item-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.item-name{
-    font-size:17px;
-    font-weight:600;
-}
-
-.item-price{
-    color:#666;
-    font-size:14px;
-    margin-top:4px;
-}
-
-input[type="checkbox"]{
-    width:20px;
-    height:20px;
-    accent-color:#16A34A;
-}
-
-/* ---------- QUANTITY ---------- */
-
-.quantity-box{
-    display:flex;
-    align-items:center;
-    background:#16A34A;
-    border-radius:20px;
-    overflow:hidden;
-}
-
-.qty-btn{
-    background:#16A34A;
-    color:white;
-    border:none;
-    width:32px;
-    height:36px;
-    font-size:20px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.qty-btn:hover{
-    background:#15803D;
-}
-
-.qty-number{
-    color:white;
-    min-width:28px;
-    text-align:center;
-    font-weight:bold;
-}
-
-.remove-btn{
-    margin-left:12px;
-    background:#FEE2E2;
-    color:#DC2626;
-    border:none;
-    padding:8px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.remove-btn:hover{
-    background:#FECACA;
-}
-
-a{
-    text-decoration:none;
-}
-
-/* ---------- STORE TOTAL ---------- */
-
-.store-total{
-    margin-top:18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding-top:12px;
-    border-top:2px dashed #D1D5DB;
-    font-size:18px;
-    font-weight:bold;
-}
-
-/* ---------- EMPTY ---------- */
-
-.empty{
-    text-align:center;
-    background:white;
-    padding:60px;
-    border-radius:18px;
-    color:#777;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-}
-
-.empty h2{
-    margin-bottom:10px;
-}
-
-</style>
-
+        .total {
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            color: white;
+            padding: 22px;
+            border-radius: 24px;
+            margin-top: 28px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-
-<div class="header">
-
-    <div class="title-section">
-        <h1>🛒 My Shopping List</h1>
-        <p>Everything you need to buy today.</p>
-    </div>
-
-    <a href="/" class="back-button">
-        ← Campus Cart
-    </a>
-
-</div>
-
-<!-- SUMMARY -->
-
-<div class="summary-card">
-
-    <div class="summary-row">
+    <div class="top">
 
         <div>
-            <h2>Total Shopping Cost</h2>
-            <p>Across all campus stores.</p>
+            <p style="color:#64748b; margin:0;">Campus Cart</p>
+            <h1 style="margin:4px 0; color:#1d4ed8;">
+                My Shopping List
+            </h1>
         </div>
 
-        <div class="summary-total">
-            ₹{{ grand_total }}
-        </div>
+        <a href="/" style="text-decoration:none; color:#2563eb; font-weight:600;">
+            ← Back
+        </a>
 
     </div>
 
-</div>
+    {% if grouped_cart %}
 
-<!-- EMPTY LIST -->
+        {% for shop_name, shop in grouped_cart.items() %}
 
-{% if shops|length == 0 %}
+        <div class="store">
 
-<div class="empty">
+            <h2>{{ shop_name }}</h2>
 
-    <h2>Your shopping list is empty.</h2>
+            {% for item in shop["items"] %}
 
-    <p>Add items from Campus Cart to start building your list.</p>
+            <div class="item">
 
-</div>
+                <div>
+                    <strong>{{ item.product_name }}</strong>
 
-{% else %}
+                    <br>
 
-<!-- STORE SECTIONS -->
-
-{% for shop_name, shop in shops.items() %}
-
-<div class="store-card
-    {% if shop_name == 'Enzo' %}
-        enzo
-    {% elif shop_name == 'Balaji' %}
-        balaji
-    {% else %}
-        qblock
-    {% endif %}
-">
-
-    <div class="store-header">
-
-        <div class="store-name">
-            {{ shop_name }}
-        </div>
-
-        <div class="store-count">
-            {{ shop["items"]|length }} Items
-        </div>
-
-    </div>
-
-    {% for item in shop["items"] %}
-
-    <div class="item-row">
-
-        <div class="item-left">
-
-            <input type="checkbox">
-
-            <div>
-
-                <div class="item-name">
-                    {{ item.product_name }}
+                    <small>₹{{ item.price }} each</small>
                 </div>
 
-                <div class="item-price">
-                    ₹{{ item.price }} each
+                <div class="qty">
+                    <a class="circle" href="/decrease/{{ item.cart_id }}">−</a>
+
+                    <strong>{{ item.quantity }}</strong>
+
+                    <a class="circle" href="/increase/{{ item.cart_id }}">+</a>
                 </div>
 
-            </div>
+                <strong style="color:#1d4ed8;">
+                    ₹{{ item.total_price }}
+                </strong>
 
-        </div>
-
-        <div style="display:flex; align-items:center;">
-
-            <div class="quantity-box">
-
-                <a href="/list/decrease/{{ item.product_id }}/{{ item.shop_id }}">
-                    <button class="qty-btn">−</button>
-                </a>
-
-                <div class="qty-number">
-                    {{ item.quantity }}
-                </div>
-
-                <a href="/list/increase/{{ item.product_id }}/{{ item.shop_id }}">
-                    <button class="qty-btn">+</button>
-                </a>
-
-            </div>
-
-            <a href="/list/remove/{{ item.product_id }}/{{ item.shop_id }}">
-                <button class="remove-btn">
+                <a class="remove" href="/remove/{{ item.cart_id }}">
                     Remove
-                </button>
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+            <div style="padding-top:16px; font-weight:700; color:#16a34a;">
+                Store Total — ₹{{ shop["store_total"] }}
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        <div class="total">
+            Grand Total — ₹{{ grand_total }}
+        </div>
+
+    {% else %}
+
+        <div class="store" style="text-align:center;">
+
+            <h2>Your shopping list is empty 🛒</h2>
+
+            <p>Add items from Campus Cart.</p>
+
+            <a href="/"
+               style="
+                    text-decoration:none;
+                    color:white;
+                    background:#2563eb;
+                    padding:12px 20px;
+                    border-radius:999px;
+                    display:inline-block;
+               ">
+                Browse Products
             </a>
 
         </div>
 
-    </div>
-
-    {% endfor %}
-
-    <div class="store-total">
-
-        <div>{{ shop_name }} Total</div>
-
-        <div>₹{{ shop["total"] }}</div>
-
-    </div>
-
-</div>
-
-{% endfor %}
-
-{% endif %}
+    {% endif %}
 
 </body>
+
 </html>

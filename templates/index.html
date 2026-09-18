@@ -1,514 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Cart</title>
-
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
-        }
-
-        body{
-            background:#F4F6F8;
-            padding:30px;
-        }
-
-        h1{
-            text-align:center;
-            color:#2563EB;
-            font-size:42px;
-            margin-bottom:8px;
-        }
-
-        .subtitle{
-            text-align:center;
-            color:#666;
-            margin-bottom:25px;
-        }
-
-        /* ---------- TOP BAR ---------- */
-
-        .top-bar{
-            position:absolute;
-            top:20px;
-            right:30px;
-        }
-
-        .list-button{
-            background:#16A34A;
-            color:white;
-            border:none;
-            padding:12px 22px;
-            border-radius:10px;
-            font-size:15px;
-            font-weight:bold;
-            cursor:pointer;
-        }
-
-        .list-button:hover{
-            background:#15803D;
-        }
-
-        /* ---------- SEARCH ---------- */
-
-        .search-container{
-            display:flex;
-            justify-content:center;
-            margin-bottom:30px;
-        }
-
-        #searchBar{
-            width:100%;
-            max-width:550px;
-            padding:14px 18px;
-            border:2px solid #2563EB;
-            border-radius:12px;
-            font-size:16px;
-            outline:none;
-        }
-
-        #searchBar:focus{
-            border-color:#1D4ED8;
-            box-shadow:0 0 10px rgba(37,99,235,0.25);
-        }
-
-        /* ---------- FLASH ---------- */
-
-        .flash-message{
-            width:fit-content;
-            margin:0 auto 25px;
-            background:#DCFCE7;
-            color:#166534;
-            padding:12px 20px;
-            border-radius:10px;
-            font-weight:bold;
-        }
-
-        /* ---------- NO RESULTS ---------- */
-
-        #noResults{
-            display:none;
-            text-align:center;
-            background:white;
-            padding:25px;
-            border-radius:15px;
-            max-width:500px;
-            margin:20px auto;
-            box-shadow:0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        #noResults h2{
-            color:#DC2626;
-            margin-bottom:8px;
-        }
-
-        #noResults p{
-            color:#666;
-            margin-bottom:15px;
-        }
-
-        /* ---------- PRODUCT GRID ---------- */
-
-        .products-container{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-            gap:20px;
-        }
-
-        .card{
-            background:white;
-            border-radius:15px;
-            padding:20px;
-            box-shadow:0 4px 12px rgba(0,0,0,0.08);
-            transition:0.2s ease;
-        }
-
-        .card:hover{
-            transform:translateY(-3px);
-        }
-
-        .category{
-            display:inline-block;
-            padding:5px 12px;
-            background:#DBEAFE;
-            color:#2563EB;
-            border-radius:20px;
-            font-size:13px;
-            font-weight:bold;
-            margin-bottom:15px;
-        }
-
-        .product-name{
-            font-size:26px;
-            font-weight:bold;
-            margin-bottom:18px;
-        }
-
-        /* ---------- SHOP ROW ---------- */
-
-        .shop-row{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:12px 14px;
-            border-radius:10px;
-            margin-bottom:10px;
-        }
-
-        .available{
-            background:#F9FAFB;
-        }
-
-        .best-price{
-            background:#DCFCE7;
-            border:2px solid #16A34A;
-        }
-
-        .not-available{
-            background:#FEE2E2;
-        }
-
-        .shop-info{
-            display:flex;
-            align-items:center;
-            gap:10px;
-        }
-
-        .dot{
-            width:10px;
-            height:10px;
-            border-radius:50%;
-        }
-
-        .green{ background:#22C55E; }
-        .red{ background:#DC2626; }
-
-        .shop-name{
-            font-size:16px;
-            font-weight:500;
-        }
-
-        .red-text{
-            color:#B91C1C;
-            font-weight:bold;
-        }
-
-        .best-badge{
-            background:#16A34A;
-            color:white;
-            padding:4px 10px;
-            border-radius:20px;
-            font-size:12px;
-            font-weight:bold;
-        }
-
-        .price{
-            font-size:18px;
-            font-weight:bold;
-            color:#111827;
-        }
-
-        /* ---------- RIGHT SIDE ---------- */
-
-        .right-side{
-            display:flex;
-            align-items:center;
-            gap:12px;
-        }
-
-        /* ---------- ADD BUTTON ---------- */
-
-        .add-button{
-            background:#16A34A;
-            color:white;
-            border:none;
-            padding:9px 18px;
-            border-radius:10px;
-            font-size:14px;
-            font-weight:bold;
-            cursor:pointer;
-        }
-
-        .add-button:hover{
-            background:#15803D;
-        }
-
-        /* ---------- QUANTITY SELECTOR ---------- */
-
-        .quantity-box{
-            display:flex;
-            align-items:center;
-            background:#16A34A;
-            border-radius:20px;
-            overflow:hidden;
-        }
-
-        .qty-btn{
-            background:#16A34A;
-            color:white;
-            border:none;
-            width:34px;
-            height:36px;
-            cursor:pointer;
-            font-size:20px;
-            font-weight:bold;
-        }
-
-        .qty-btn:hover{
-            background:#15803D;
-        }
-
-        .qty-number{
-            color:white;
-            min-width:28px;
-            text-align:center;
-            font-weight:bold;
-            font-size:15px;
-        }
-
-        /* ---------- REQUEST BUTTON ---------- */
-
-        .request-button{
-            background:#DC2626;
-            color:white;
-            border:none;
-            padding:8px 14px;
-            border-radius:8px;
-            font-size:13px;
-            font-weight:bold;
-            cursor:pointer;
-        }
-
-        .request-button:hover{
-            background:#B91C1C;
-        }
-
-        a{
-            text-decoration:none;
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Cart • Version E</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#2563EB;--accent:#60A5FA;--text:#0F172A;--muted:#64748B;--green:#16A34A;--red:#DC2626}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:linear-gradient(180deg,#FBFDFF,#EEF5FF);padding:28px;color:var(--text);min-height:100vh}
+body:before,body:after{content:"";position:fixed;width:500px;height:500px;border-radius:50%;filter:blur(90px);z-index:-1}
+body:before{top:-120px;left:-120px;background:rgba(96,165,250,.18)}
+body:after{bottom:-160px;right:-120px;background:rgba(191,219,254,.25)}
+.navbar{background:rgba(255,255,255,.75);backdrop-filter:blur(16px);padding:18px 24px;border-radius:28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 40px rgba(37,99,235,.08);margin-bottom:28px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-icon{width:48px;height:48px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--accent));display:grid;place-items:center;color:white;font-size:22px}
+.logo h1{font-size:28px;color:var(--primary)}
+.logo p{font-size:13px;color:var(--muted)}
+.list-btn{background:linear-gradient(90deg,var(--primary),var(--accent));color:white;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:600}
+.hero{background:linear-gradient(135deg,#fff,#EFF6FF);padding:40px;border-radius:34px;box-shadow:0 20px 60px rgba(37,99,235,.08);margin-bottom:32px}
+.hero h2{font-size:48px;line-height:1.05;margin-bottom:14px}
+.hero h2 span{color:var(--primary)}
+.hero p{color:var(--muted);max-width:560px;margin-bottom:26px}
+.search{background:white;padding:18px 22px;border-radius:20px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 24px rgba(37,99,235,.08)}
+.search input{border:none;outline:none;flex:1;font-size:15px}
+.stats{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
+.stat{background:white;padding:14px 18px;border-radius:18px;box-shadow:0 8px 20px rgba(37,99,235,.05)}
+.stat small{display:block;color:var(--muted)} .stat b{font-size:20px;color:var(--primary)}
+.flash{background:#DCFCE7;color:#166534;padding:14px 18px;border-radius:16px;margin-bottom:20px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:24px}
+.card{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);padding:24px;border-radius:28px;box-shadow:0 18px 40px rgba(37,99,235,.08)}
+.card:hover{transform:translateY(-6px)}
+.pill{display:inline-block;padding:7px 14px;border-radius:999px;background:#DBEAFE;color:var(--primary);font-size:12px;font-weight:700;margin-bottom:16px}
+.card h3{font-size:24px;margin-bottom:18px}
+.shop{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #EDF2FF}
+.shop:first-of-type{border-top:none}
+.shop-name{font-weight:600;margin-bottom:4px}
+.stock{font-size:13px;font-weight:600}.available{color:var(--green)}.unavailable{color:var(--red)}
+.shop-actions{display:flex;align-items:center;gap:12px}
+.price{font-size:18px;color:var(--primary);font-weight:700}
+.add-btn{background:linear-gradient(90deg,var(--primary),var(--accent));color:white;text-decoration:none;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600}
+.request-btn{background:#FEE2E2;color:#B91C1C;text-decoration:none;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600}
+.quantity-box{display:flex;align-items:center;gap:10px;background:#EFF6FF;padding:6px 8px;border-radius:999px}
+.qty-btn{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:white;text-decoration:none;color:var(--primary);font-weight:700}
+.qty-number{min-width:20px;text-align:center;font-weight:700;color:var(--primary)}
+.hidden{display:none}
+@media(max-width:768px){body{padding:18px}.hero h2{font-size:34px}.navbar{flex-direction:column;align-items:flex-start;gap:16px}.shop{flex-direction:column;align-items:flex-start}.shop-actions{width:100%;justify-content:space-between}}
+</style>
 </head>
-
 <body>
-    <div class="top-bar">
-    <a href="/list">
-        <button class="list-button">
-            📝 My Shopping List
-        </button>
-    </a>
-    </div>
-
-<h1>Campus Cart</h1>
-<p class="subtitle">Compare prices across campus shops.</p>
-
-    <!-- SEARCH BAR -->
-
-    <div class="search-container">
-        <input
-            type="text"
-            id="searchBar"
-            placeholder="🔍 Search products, shops or categories..."
-        >
-    </div>
-
-    <!-- FLASH MESSAGE -->
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash-message">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <!-- NO PRODUCTS FOUND -->
-
-    <div id="noResults">
-
-        <h2>No Products Found</h2>
-
-        <p>This product isn't available in any campus shop.</p>
-
-        <form action="/request_custom" method="POST">
-
-            <input
-                type="hidden"
-                id="hiddenProductName"
-                name="product_name"
-            >
-
-            <button
-                class="request-button"
-                id="requestCustomButton"
-                type="submit">
-                Request This Product
-            </button>
-
-        </form>
-
-    </div>
-
-    <!-- PRODUCT CARDS -->
-
-    <div class="products-container">
-
-        {% for product in products %}
-
-        <div
-            class="card"
-            data-search="
-                {{ product.product_name|lower }}
-                {{ product.category|lower }}
-                {% for shop in product.shops %}
-                    {{ shop.shop_name|lower }}
-                {% endfor %}
-            "
-        >
-
-            <div class="category">{{ product.category }}</div>
-
-            <div class="product-name">{{ product.product_name }}</div>
-
-            {% for shop in product.shops %}
-
-                {% if shop.stock > 0 %}
-
-                <div class="shop-row {% if loop.first %}best-price{% else %}available{% endif %}">
-
-                    <div class="shop-info">
-
-                        <div class="dot green"></div>
-
-                        <span class="shop-name">{{ shop.shop_name }}</span>
-
-                        {% if loop.first %}
-                            <span class="best-badge">Best Price</span>
-                        {% endif %}
-
-                    </div>
-
-                    <div class="right-side">
-
-                        <span class="price">₹{{ shop.price }}</span>
-
-                        {% if shop.quantity == 0 %}
-
-                            <a href="/cart/increase/{{ shop.product_id }}/{{ shop.shop_id }}">
-                                <button class="add-button">
-                                    ADD
-                                </button>
-                            </a>
-
-                        {% else %}
-
-                            <div class="quantity-box">
-
-                                <a href="/cart/decrease/{{ shop.product_id }}/{{ shop.shop_id }}">
-                                    <button class="qty-btn">−</button>
-                                </a>
-
-                                <div class="qty-number">
-                                    {{ shop.quantity }}
-                                </div>
-
-                                <a href="/cart/increase/{{ shop.product_id }}/{{ shop.shop_id }}">
-                                    <button class="qty-btn">+</button>
-                                </a>
-
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-                {% else %}
-
-                <div class="shop-row not-available">
-
-                    <div class="shop-info">
-
-                        <div class="dot red"></div>
-
-                        <span class="shop-name red-text">
-                            {{ shop.shop_name }} (Out of Stock)
-                        </span>
-
-                    </div>
-
-                    <a href="/request/{{ shop.product_id }}/{{ shop.shop_id }}">
-                        <button class="request-button">
-                            Request Item
-                        </button>
-                    </a>
-
-                </div>
-
-                {% endif %}
-
-            {% endfor %}
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    <!-- SEARCH SCRIPT -->
-
-    <script>
-
-        const searchBar = document.getElementById("searchBar");
-        const cards = document.querySelectorAll(".card");
-        const noResults = document.getElementById("noResults");
-
-        const hiddenInput = document.getElementById("hiddenProductName");
-        const requestButton = document.getElementById("requestCustomButton");
-
-        searchBar.addEventListener("input", function(){
-
-            const searchText = searchBar.value.trim().toLowerCase();
-
-            let visibleCards = 0;
-
-            cards.forEach(function(card){
-
-                const searchableText = card.dataset.search;
-
-                if(searchableText.includes(searchText)){
-                    card.style.display = "block";
-                    visibleCards++;
-                }else{
-                    card.style.display = "none";
-                }
-
-            });
-
-            if(visibleCards === 0 && searchText !== ""){
-
-                noResults.style.display = "block";
-                hiddenInput.value = searchBar.value;
-                requestButton.textContent =
-                    `Request "${searchBar.value}"`;
-
-            }else{
-
-                noResults.style.display = "none";
-
-            }
-
-        });
-
-    </script>
+<div class="navbar">
+<div class="logo"><div class="logo-icon">🛍️</div><div><h1>Campus Cart</h1><p>VIT's Smart Shopping Companion</p></div></div>
+<a href="/list" class="list-btn">🛒 My Shopping List</a>
+</div>
+
+<section class="hero">
+<h2>Everything on campus. <span>One search away.</span></h2>
+<p>Compare live prices across Enzo, Balaji and Q-Block. Add items instantly, manage quantities, and request out-of-stock products.</p>
+<div class="search"><span>🔍</span><input id="search" placeholder="Search products, drinks, stationery..."></div>
+<div class="stats">
+<div class="stat"><small>Stores</small><b>3</b></div>
+<div class="stat"><small>Products</small><b>13+</b></div>
+<div class="stat"><small>Live Inventory</small><b>Updated</b></div>
+</div>
+</section>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="flash">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="grid" id="products">
+{% for product in products %}
+<div class="card product-card">
+<div class="pill">{{ product.category }}</div>
+<h3>{{ product.product_name }}</h3>
+
+{% for shop in product.shops %}
+<div class="shop">
+<div>
+<div class="shop-name">{{ shop.shop_name }}</div>
+{% if shop.stock > 0 %}
+<div class="stock available">● In Stock</div>
+{% else %}
+<div class="stock unavailable">● Out of Stock</div>
+{% endif %}
+</div>
+
+{% if shop.stock > 0 %}
+<div class="shop-actions">
+<div class="price">₹{{ shop.price }}</div>
+
+{% if shop.quantity == 0 %}
+<a href="/add/{{ shop.product_id }}/{{ shop.shop_id }}" class="add-btn">+ Add to List</a>
+{% else %}
+<div class="quantity-box">
+<a href="/decrease/{{ shop.cart_id }}" class="qty-btn">−</a>
+<div class="qty-number">{{ shop.quantity }}</div>
+<a href="/increase/{{ shop.cart_id }}" class="qty-btn">+</a>
+</div>
+{% endif %}
+
+</div>
+{% else %}
+<a href="/request/{{ shop.product_id }}/{{ shop.shop_id }}" class="request-btn">Request Item</a>
+{% endif %}
+</div>
+{% endfor %}
+
+</div>
+{% endfor %}
+</div>
+
+<script>
+const search=document.getElementById("search");
+const cards=document.querySelectorAll(".product-card");
+search.addEventListener("input",()=>{
+ const q=search.value.toLowerCase().trim();
+ cards.forEach(card=>{
+   card.classList.toggle("hidden",!card.innerText.toLowerCase().includes(q));
+ });
+});
+</script>
 
 </body>
 </html>
