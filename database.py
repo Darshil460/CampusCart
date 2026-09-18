@@ -48,8 +48,12 @@ CREATE TABLE IF NOT EXISTS inventory (
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    product_id INTEGER NOT NULL,
-    shop_id INTEGER NOT NULL,
+
+    product_id INTEGER,
+    shop_id INTEGER,
+
+    custom_product TEXT,
+
     status TEXT DEFAULT 'Pending',
     requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -57,7 +61,24 @@ CREATE TABLE IF NOT EXISTS requests (
     FOREIGN KEY (shop_id) REFERENCES shops(id)
 )
 """)
+# -----------------------------
+# CART TABLE
+# -----------------------------
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS cart (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+    product_id INTEGER NOT NULL,
+    shop_id INTEGER NOT NULL,
+
+    quantity INTEGER DEFAULT 1,
+
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (shop_id) REFERENCES shops(id)
+)
+""")
 # =====================================================
 # INSERT SHOPS
 # =====================================================
@@ -87,8 +108,6 @@ products = [
     (9, "Shampoo", "Personal Care"),
     (10, "Notebook", "Stationery"),
     (11, "Pen", "Stationery"),
-    (12, "Lays", "Food"),
-    (13, "Diet Coke", "Beverage")
 ]
 
 cursor.executemany(

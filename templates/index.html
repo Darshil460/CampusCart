@@ -6,7 +6,6 @@
     <title>Campus Cart</title>
 
     <style>
-
         *{
             margin:0;
             padding:0;
@@ -15,37 +14,109 @@
         }
 
         body{
-            background:#f4f4f4;
+            background:#F4F6F8;
             padding:30px;
         }
 
         h1{
             text-align:center;
-            color:#2563eb;
-            margin-bottom:8px;
+            color:#2563EB;
             font-size:42px;
+            margin-bottom:8px;
         }
 
         .subtitle{
             text-align:center;
-            color:#555;
+            color:#666;
+            margin-bottom:25px;
+        }
+
+        /* ---------- TOP BAR ---------- */
+
+        .top-bar{
+            position:absolute;
+            top:20px;
+            right:30px;
+        }
+
+        .list-button{
+            background:#16A34A;
+            color:white;
+            border:none;
+            padding:12px 22px;
+            border-radius:10px;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .list-button:hover{
+            background:#15803D;
+        }
+
+        /* ---------- SEARCH ---------- */
+
+        .search-container{
+            display:flex;
+            justify-content:center;
             margin-bottom:30px;
         }
 
-        /* Flash message */
+        #searchBar{
+            width:100%;
+            max-width:550px;
+            padding:14px 18px;
+            border:2px solid #2563EB;
+            border-radius:12px;
+            font-size:16px;
+            outline:none;
+        }
+
+        #searchBar:focus{
+            border-color:#1D4ED8;
+            box-shadow:0 0 10px rgba(37,99,235,0.25);
+        }
+
+        /* ---------- FLASH ---------- */
+
         .flash-message{
             width:fit-content;
-            margin:0 auto 25px auto;
-            background:#dcfce7;
+            margin:0 auto 25px;
+            background:#DCFCE7;
             color:#166534;
             padding:12px 20px;
             border-radius:10px;
             font-weight:bold;
         }
 
+        /* ---------- NO RESULTS ---------- */
+
+        #noResults{
+            display:none;
+            text-align:center;
+            background:white;
+            padding:25px;
+            border-radius:15px;
+            max-width:500px;
+            margin:20px auto;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        #noResults h2{
+            color:#DC2626;
+            margin-bottom:8px;
+        }
+
+        #noResults p{
+            color:#666;
+            margin-bottom:15px;
+        }
+
+        /* ---------- PRODUCT GRID ---------- */
+
         .products-container{
             display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
             gap:20px;
         }
 
@@ -54,15 +125,21 @@
             border-radius:15px;
             padding:20px;
             box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            transition:0.2s ease;
+        }
+
+        .card:hover{
+            transform:translateY(-3px);
         }
 
         .category{
             display:inline-block;
             padding:5px 12px;
+            background:#DBEAFE;
+            color:#2563EB;
             border-radius:20px;
-            background:#dbeafe;
-            color:#2563eb;
             font-size:13px;
+            font-weight:bold;
             margin-bottom:15px;
         }
 
@@ -72,21 +149,28 @@
             margin-bottom:18px;
         }
 
+        /* ---------- SHOP ROW ---------- */
+
         .shop-row{
             display:flex;
             justify-content:space-between;
             align-items:center;
-            padding:10px 12px;
-            margin-bottom:8px;
+            padding:12px 14px;
             border-radius:10px;
+            margin-bottom:10px;
         }
 
         .available{
-            background:#f9fafb;
+            background:#F9FAFB;
+        }
+
+        .best-price{
+            background:#DCFCE7;
+            border:2px solid #16A34A;
         }
 
         .not-available{
-            background:#fee2e2;
+            background:#FEE2E2;
         }
 
         .shop-info{
@@ -101,51 +185,139 @@
             border-radius:50%;
         }
 
-        .green{
-            background:#22c55e;
-        }
-
-        .red{
-            background:#dc2626;
-        }
+        .green{ background:#22C55E; }
+        .red{ background:#DC2626; }
 
         .shop-name{
             font-size:16px;
+            font-weight:500;
         }
 
-        .shop-name.red-text{
-            color:#dc2626;
+        .red-text{
+            color:#B91C1C;
+            font-weight:bold;
+        }
+
+        .best-badge{
+            background:#16A34A;
+            color:white;
+            padding:4px 10px;
+            border-radius:20px;
+            font-size:12px;
             font-weight:bold;
         }
 
         .price{
+            font-size:18px;
             font-weight:bold;
-            font-size:17px;
             color:#111827;
         }
 
-        .request-button{
-            background:#dc2626;
+        /* ---------- RIGHT SIDE ---------- */
+
+        .right-side{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+
+        /* ---------- ADD BUTTON ---------- */
+
+        .add-button{
+            background:#16A34A;
             color:white;
             border:none;
-            padding:7px 12px;
-            border-radius:8px;
+            padding:9px 18px;
+            border-radius:10px;
+            font-size:14px;
+            font-weight:bold;
             cursor:pointer;
-            font-size:13px;
+        }
+
+        .add-button:hover{
+            background:#15803D;
+        }
+
+        /* ---------- QUANTITY SELECTOR ---------- */
+
+        .quantity-box{
+            display:flex;
+            align-items:center;
+            background:#16A34A;
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        .qty-btn{
+            background:#16A34A;
+            color:white;
+            border:none;
+            width:34px;
+            height:36px;
+            cursor:pointer;
+            font-size:20px;
             font-weight:bold;
         }
 
+        .qty-btn:hover{
+            background:#15803D;
+        }
+
+        .qty-number{
+            color:white;
+            min-width:28px;
+            text-align:center;
+            font-weight:bold;
+            font-size:15px;
+        }
+
+        /* ---------- REQUEST BUTTON ---------- */
+
+        .request-button{
+            background:#DC2626;
+            color:white;
+            border:none;
+            padding:8px 14px;
+            border-radius:8px;
+            font-size:13px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
         .request-button:hover{
-            background:#b91c1c;
+            background:#B91C1C;
+        }
+
+        a{
+            text-decoration:none;
         }
 
     </style>
 </head>
 
 <body>
+    <div class="top-bar">
+    <a href="/list">
+        <button class="list-button">
+            📝 My Shopping List
+        </button>
+    </a>
+    </div>
 
-    <h1>Campus Cart</h1>
-    <p class="subtitle">Compare prices across campus shops.</p>
+<h1>Campus Cart</h1>
+<p class="subtitle">Compare prices across campus shops.</p>
+
+    <!-- SEARCH BAR -->
+
+    <div class="search-container">
+        <input
+            type="text"
+            id="searchBar"
+            placeholder="🔍 Search products, shops or categories..."
+        >
+    </div>
+
+    <!-- FLASH MESSAGE -->
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -157,32 +329,105 @@
         {% endif %}
     {% endwith %}
 
+    <!-- NO PRODUCTS FOUND -->
+
+    <div id="noResults">
+
+        <h2>No Products Found</h2>
+
+        <p>This product isn't available in any campus shop.</p>
+
+        <form action="/request_custom" method="POST">
+
+            <input
+                type="hidden"
+                id="hiddenProductName"
+                name="product_name"
+            >
+
+            <button
+                class="request-button"
+                id="requestCustomButton"
+                type="submit">
+                Request This Product
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- PRODUCT CARDS -->
+
     <div class="products-container">
 
         {% for product in products %}
 
-        <div class="card">
+        <div
+            class="card"
+            data-search="
+                {{ product.product_name|lower }}
+                {{ product.category|lower }}
+                {% for shop in product.shops %}
+                    {{ shop.shop_name|lower }}
+                {% endfor %}
+            "
+        >
 
-            <div class="category">
-                {{ product.category }}
-            </div>
+            <div class="category">{{ product.category }}</div>
 
-            <div class="product-name">
-                {{ product.product_name }}
-            </div>
+            <div class="product-name">{{ product.product_name }}</div>
 
             {% for shop in product.shops %}
 
                 {% if shop.stock > 0 %}
 
-                <div class="shop-row available">
+                <div class="shop-row {% if loop.first %}best-price{% else %}available{% endif %}">
 
                     <div class="shop-info">
+
                         <div class="dot green"></div>
+
                         <span class="shop-name">{{ shop.shop_name }}</span>
+
+                        {% if loop.first %}
+                            <span class="best-badge">Best Price</span>
+                        {% endif %}
+
                     </div>
 
-                    <span class="price">₹{{ shop.price }}</span>
+                    <div class="right-side">
+
+                        <span class="price">₹{{ shop.price }}</span>
+
+                        {% if shop.quantity == 0 %}
+
+                            <a href="/cart/increase/{{ shop.product_id }}/{{ shop.shop_id }}">
+                                <button class="add-button">
+                                    ADD
+                                </button>
+                            </a>
+
+                        {% else %}
+
+                            <div class="quantity-box">
+
+                                <a href="/cart/decrease/{{ shop.product_id }}/{{ shop.shop_id }}">
+                                    <button class="qty-btn">−</button>
+                                </a>
+
+                                <div class="qty-number">
+                                    {{ shop.quantity }}
+                                </div>
+
+                                <a href="/cart/increase/{{ shop.product_id }}/{{ shop.shop_id }}">
+                                    <button class="qty-btn">+</button>
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
 
                 </div>
 
@@ -191,8 +436,13 @@
                 <div class="shop-row not-available">
 
                     <div class="shop-info">
+
                         <div class="dot red"></div>
-                        <span class="shop-name red-text">{{ shop.shop_name }}</span>
+
+                        <span class="shop-name red-text">
+                            {{ shop.shop_name }} (Out of Stock)
+                        </span>
+
                     </div>
 
                     <a href="/request/{{ shop.product_id }}/{{ shop.shop_id }}">
@@ -212,6 +462,53 @@
         {% endfor %}
 
     </div>
+
+    <!-- SEARCH SCRIPT -->
+
+    <script>
+
+        const searchBar = document.getElementById("searchBar");
+        const cards = document.querySelectorAll(".card");
+        const noResults = document.getElementById("noResults");
+
+        const hiddenInput = document.getElementById("hiddenProductName");
+        const requestButton = document.getElementById("requestCustomButton");
+
+        searchBar.addEventListener("input", function(){
+
+            const searchText = searchBar.value.trim().toLowerCase();
+
+            let visibleCards = 0;
+
+            cards.forEach(function(card){
+
+                const searchableText = card.dataset.search;
+
+                if(searchableText.includes(searchText)){
+                    card.style.display = "block";
+                    visibleCards++;
+                }else{
+                    card.style.display = "none";
+                }
+
+            });
+
+            if(visibleCards === 0 && searchText !== ""){
+
+                noResults.style.display = "block";
+                hiddenInput.value = searchBar.value;
+                requestButton.textContent =
+                    `Request "${searchBar.value}"`;
+
+            }else{
+
+                noResults.style.display = "none";
+
+            }
+
+        });
+
+    </script>
 
 </body>
 </html>

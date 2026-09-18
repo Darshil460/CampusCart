@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Shopping List</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#F4F6F8;
+    padding:30px;
+}
+
+/* ---------- HEADER ---------- */
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.back-button{
+    text-decoration:none;
+    color:white;
+    background:#2563EB;
+    padding:10px 18px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.back-button:hover{
+    background:#1D4ED8;
+}
+
+.title-section h1{
+    color:#16A34A;
+    font-size:36px;
+}
+
+.title-section p{
+    color:#666;
+    margin-top:5px;
+}
+
+/* ---------- SUMMARY ---------- */
+
+.summary-card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom:30px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.summary-total{
+    color:#16A34A;
+    font-size:28px;
+    font-weight:bold;
+}
+
+/* ---------- STORE CARDS ---------- */
+
+.store-card{
+    background:white;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:24px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.enzo{
+    border-left:8px solid #16A34A;
+}
+
+.balaji{
+    border-left:8px solid #2563EB;
+}
+
+.qblock{
+    border-left:8px solid #EA580C;
+}
+
+.store-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.store-name{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.store-count{
+    background:#DCFCE7;
+    color:#166534;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+/* ---------- ITEM ROW ---------- */
+
+.item-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 0;
+    border-bottom:1px solid #E5E7EB;
+}
+
+.item-row:last-child{
+    border-bottom:none;
+}
+
+.item-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.item-name{
+    font-size:17px;
+    font-weight:600;
+}
+
+.item-price{
+    color:#666;
+    font-size:14px;
+    margin-top:4px;
+}
+
+input[type="checkbox"]{
+    width:20px;
+    height:20px;
+    accent-color:#16A34A;
+}
+
+/* ---------- QUANTITY ---------- */
+
+.quantity-box{
+    display:flex;
+    align-items:center;
+    background:#16A34A;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.qty-btn{
+    background:#16A34A;
+    color:white;
+    border:none;
+    width:32px;
+    height:36px;
+    font-size:20px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.qty-btn:hover{
+    background:#15803D;
+}
+
+.qty-number{
+    color:white;
+    min-width:28px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.remove-btn{
+    margin-left:12px;
+    background:#FEE2E2;
+    color:#DC2626;
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.remove-btn:hover{
+    background:#FECACA;
+}
+
+a{
+    text-decoration:none;
+}
+
+/* ---------- STORE TOTAL ---------- */
+
+.store-total{
+    margin-top:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-top:12px;
+    border-top:2px dashed #D1D5DB;
+    font-size:18px;
+    font-weight:bold;
+}
+
+/* ---------- EMPTY ---------- */
+
+.empty{
+    text-align:center;
+    background:white;
+    padding:60px;
+    border-radius:18px;
+    color:#777;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.empty h2{
+    margin-bottom:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="title-section">
+        <h1>🛒 My Shopping List</h1>
+        <p>Everything you need to buy today.</p>
+    </div>
+
+    <a href="/" class="back-button">
+        ← Campus Cart
+    </a>
+
+</div>
+
+<!-- SUMMARY -->
+
+<div class="summary-card">
+
+    <div class="summary-row">
+
+        <div>
+            <h2>Total Shopping Cost</h2>
+            <p>Across all campus stores.</p>
+        </div>
+
+        <div class="summary-total">
+            ₹{{ grand_total }}
+        </div>
+
+    </div>
+
+</div>
+
+<!-- EMPTY LIST -->
+
+{% if shops|length == 0 %}
+
+<div class="empty">
+
+    <h2>Your shopping list is empty.</h2>
+
+    <p>Add items from Campus Cart to start building your list.</p>
+
+</div>
+
+{% else %}
+
+<!-- STORE SECTIONS -->
+
+{% for shop_name, shop in shops.items() %}
+
+<div class="store-card
+    {% if shop_name == 'Enzo' %}
+        enzo
+    {% elif shop_name == 'Balaji' %}
+        balaji
+    {% else %}
+        qblock
+    {% endif %}
+">
+
+    <div class="store-header">
+
+        <div class="store-name">
+            {{ shop_name }}
+        </div>
+
+        <div class="store-count">
+            {{ shop["items"]|length }} Items
+        </div>
+
+    </div>
+
+    {% for item in shop["items"] %}
+
+    <div class="item-row">
+
+        <div class="item-left">
+
+            <input type="checkbox">
+
+            <div>
+
+                <div class="item-name">
+                    {{ item.product_name }}
+                </div>
+
+                <div class="item-price">
+                    ₹{{ item.price }} each
+                </div>
+
+            </div>
+
+        </div>
+
+        <div style="display:flex; align-items:center;">
+
+            <div class="quantity-box">
+
+                <a href="/list/decrease/{{ item.product_id }}/{{ item.shop_id }}">
+                    <button class="qty-btn">−</button>
+                </a>
+
+                <div class="qty-number">
+                    {{ item.quantity }}
+                </div>
+
+                <a href="/list/increase/{{ item.product_id }}/{{ item.shop_id }}">
+                    <button class="qty-btn">+</button>
+                </a>
+
+            </div>
+
+            <a href="/list/remove/{{ item.product_id }}/{{ item.shop_id }}">
+                <button class="remove-btn">
+                    Remove
+                </button>
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    <div class="store-total">
+
+        <div>{{ shop_name }} Total</div>
+
+        <div>₹{{ shop["total"] }}</div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+</body>
+</html>
