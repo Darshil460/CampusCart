@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Cart</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#f4f4f4;
+            padding:30px;
+        }
+
+        h1{
+            text-align:center;
+            color:#2563eb;
+            margin-bottom:8px;
+            font-size:42px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:#555;
+            margin-bottom:30px;
+        }
+
+        /* Flash message */
+        .flash-message{
+            width:fit-content;
+            margin:0 auto 25px auto;
+            background:#dcfce7;
+            color:#166534;
+            padding:12px 20px;
+            border-radius:10px;
+            font-weight:bold;
+        }
+
+        .products-container{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:20px;
+        }
+
+        .card{
+            background:white;
+            border-radius:15px;
+            padding:20px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .category{
+            display:inline-block;
+            padding:5px 12px;
+            border-radius:20px;
+            background:#dbeafe;
+            color:#2563eb;
+            font-size:13px;
+            margin-bottom:15px;
+        }
+
+        .product-name{
+            font-size:26px;
+            font-weight:bold;
+            margin-bottom:18px;
+        }
+
+        .shop-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:10px 12px;
+            margin-bottom:8px;
+            border-radius:10px;
+        }
+
+        .available{
+            background:#f9fafb;
+        }
+
+        .not-available{
+            background:#fee2e2;
+        }
+
+        .shop-info{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .dot{
+            width:10px;
+            height:10px;
+            border-radius:50%;
+        }
+
+        .green{
+            background:#22c55e;
+        }
+
+        .red{
+            background:#dc2626;
+        }
+
+        .shop-name{
+            font-size:16px;
+        }
+
+        .shop-name.red-text{
+            color:#dc2626;
+            font-weight:bold;
+        }
+
+        .price{
+            font-weight:bold;
+            font-size:17px;
+            color:#111827;
+        }
+
+        .request-button{
+            background:#dc2626;
+            color:white;
+            border:none;
+            padding:7px 12px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:13px;
+            font-weight:bold;
+        }
+
+        .request-button:hover{
+            background:#b91c1c;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <h1>Campus Cart</h1>
+    <p class="subtitle">Compare prices across campus shops.</p>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="products-container">
+
+        {% for product in products %}
+
+        <div class="card">
+
+            <div class="category">
+                {{ product.category }}
+            </div>
+
+            <div class="product-name">
+                {{ product.product_name }}
+            </div>
+
+            {% for shop in product.shops %}
+
+                {% if shop.stock > 0 %}
+
+                <div class="shop-row available">
+
+                    <div class="shop-info">
+                        <div class="dot green"></div>
+                        <span class="shop-name">{{ shop.shop_name }}</span>
+                    </div>
+
+                    <span class="price">₹{{ shop.price }}</span>
+
+                </div>
+
+                {% else %}
+
+                <div class="shop-row not-available">
+
+                    <div class="shop-info">
+                        <div class="dot red"></div>
+                        <span class="shop-name red-text">{{ shop.shop_name }}</span>
+                    </div>
+
+                    <a href="/request/{{ shop.product_id }}/{{ shop.shop_id }}">
+                        <button class="request-button">
+                            Request Item
+                        </button>
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>
