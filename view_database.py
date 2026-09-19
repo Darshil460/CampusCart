@@ -25,7 +25,8 @@ cursor.execute("""
         ON inventory.shop_id = shops.id
 """)
 
-
+cursor.execute("PRAGMA table_info(sales)")
+print(cursor.fetchall())
 # Get all results
 
 rows = cursor.fetchall()

@@ -220,6 +220,35 @@ CREATE TABLE IF NOT EXISTS sales (
 )
 """)
 
+
+# -----------------------------
+# SALES TABLE
+# -----------------------------
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shop_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    total INTEGER NOT NULL,
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(shop_id) REFERENCES shops(id),
+    FOREIGN KEY(product_id) REFERENCES products(id)
+)
+""")
+
+# -----------------------------
+# SEARCH HISTORY TABLE
+# -----------------------------
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS searches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_name TEXT NOT NULL,
+    searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
 # Save changes
 conn.commit()
 conn.close()

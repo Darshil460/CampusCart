@@ -337,6 +337,100 @@ def request_item(product_id, shop_id):
 
     return redirect(url_for("home"))
 
+@app.route("/financial-analysis/<int:shop_id>")
+def financial_analysis(shop_id):
+    conn = get_db_connection()
+
+    # Shop name
+    shop = conn.execute(
+        "SELECT name FROM shops WHERE id=?",
+        (shop_id,)
+    ).fetchone()
+
+    shop_name = shop["name"]
+
+    # Sales today
+    sales_today = conn.execute("""
+        SELECT COALESCE(SUM(total_price),0)
+        FROM sales
+        WHERE shop_id=?
+        AND DATE(purchased_at)=DATE('now')
+    """,(shop_id,)).fetchone()[0]
+
+    # Total revenue
+    total_revenue = conn.execute("""
+        SELECT COALESCE(SUM(total_price),0)
+        FROM sales
+        WHERE shop_id=?
+    """,(shop_id,)).fetchone()[0]
+
+    # Quantity sold
+    quantity_sold = conn.execute("""
+        SELECT COALESCE(SUM(quantity),0)
+        FROM sales
+        WHERE shop_id=?
+    """,(shop_id,)).fetchone()[0]
+
+    # Top products
+    top_products = conn.execute("""
+        SELECT
+            products.name,
+            SUM(sales.quantity) AS quantity,
+            SUM(sales.total_price) AS revenue
+        FROM sales
+        JOIN products
+            ON sales.product_id = products.id
+        WHERE sales.shop_id=?
+        GROUP BY sales.product_id
+        ORDER BY quantity DESC
+        LIMIT 5
+    """,(shop_id,)).fetchall()
+
+    # Recent sales
+    recent_sales = conn.execute("""
+    SELECT
+        transaction_id,
+        purchased_at AS date,
+        total_price AS total
+    FROM sales
+    WHERE shop_id=?
+    ORDER BY purchased_at DESC
+    LIMIT 6
+""", (shop_id,)).fetchall()
+
+    # Most purchased
+    if top_products:
+        most_purchased = top_products[0]["name"]
+    else:
+        most_purchased = "No Sales Yet"
+
+    # Most searched
+    searched = conn.execute("""
+        SELECT product_name, COUNT(*) AS count
+        FROM searches
+        GROUP BY product_name
+        ORDER BY count DESC
+        LIMIT 1
+    """).fetchone()
+
+    most_searched = searched["product_name"] if searched else "No Searches Yet"
+
+    profit_margin = "Coming soon"      # placeholder
+
+    conn.close()
+
+    return render_template(
+        "financial_analysis.html",
+        shop_name=shop_name,
+        sales_today=sales_today,
+        total_revenue=total_revenue,
+        quantity_sold=quantity_sold,
+        profit_margin=profit_margin,
+        top_products=top_products,
+        recent_sales=recent_sales,
+        most_purchased=most_purchased,
+        most_searched=most_searched
+    )
 
 @app.route("/generate_qr/<int:shop_id>")
 def generate_qr(shop_id):
@@ -759,7 +853,24 @@ def fulfill_request():
     url_for("requests_page", shop_id=shop_id)
     )
 
+from flask import request
 
+@app.route("/request-product", methods=["POST"])
+def request_product():
+    data = request.get_json()
+    product_name = data["product_name"]
+
+    conn = get_db_connection()
+
+    conn.execute(
+        "INSERT INTO searches(product_name) VALUES (?)",
+        (product_name,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {"success": True}
 
 # -----------------------------------
 # RUN APP

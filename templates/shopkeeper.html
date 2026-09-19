@@ -245,9 +245,69 @@ body::after{
     }
 
 }
+.analytics-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#2563EB,#60A5FA);
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.analytics-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(37,99,235,0.25);
+}
+
+.shop-label{
+    display:block;
+    margin:15px 0 8px;
+    font-weight:600;
+    color:#374151;
+    text-align:left;
+}
+
+.shop-dropdown{
+    width:100%;
+    padding:12px;
+    border:1px solid #CBD5E1;
+    border-radius:12px;
+    font-size:15px;
+    margin-bottom:15px;
+    background:white;
+    cursor:pointer;
+}
+
+.analytics-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#2563EB,#60A5FA);
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.25s;
+}
+
+.analytics-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(37,99,235,0.25);
+}
 
 </style>
 </head>
+<script>
+function openAnalytics() {
+    const shopId = document.getElementById("shopSelect").value;
+    window.location.href = "/financial-analysis/" + shopId;
+}
+</script>
 
 <body>
 
@@ -335,27 +395,32 @@ body::after{
         </a>
 
     </div>
+<!-- Financial Statistics Card -->
+<div class="card">
 
+    <div class="icon sales">💰</div>
 
-    <!-- Sales -->
-    <div class="card">
+    <h3>Financial Statistics</h3>
 
-        <div class="icon sales">💰</div>
+    <p>
+        A formal review of your transactions from both the vendor and students end.
+    </p>
 
-        <h3> Financial Statistics </h3>
+    <!-- Shop Selector -->
+    <label for="shopSelect" class="shop-label">Select Shop</label>
 
-        <p>
-            A formal review of your transactions from both the vendor and students end. 
-        </p>
+    <select id="shopSelect" class="shop-dropdown">
+        <option value="1">Enzo</option>
+        <option value="2">Q-Block</option>
+        <option value="3">Balaji</option>
+    </select>
 
-        <a href="#" class="button sales-btn">
-            Coming Soon
-        </a>
-
-    </div>
+    <!-- Analytics Button -->
+    <button type="button" class="analytics-btn" onclick="openAnalytics()">
+        📊 Financial Analytics
+    </button>
 
 </div>
-
 
 <div class="footer">
     Campus Cart • VIT Hackathon Prototype

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Campus Cart • Financial Analysis</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --blue:#2563EB;
+    --accent:#60A5FA;
+    --text:#0F172A;
+    --muted:#64748B;
+    --green:#16A34A;
+    --orange:#F59E0B;
+    --red:#DC2626;
+    --purple:#7C3AED;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Inter",sans-serif;
+}
+
+body{
+    background:linear-gradient(180deg,#FBFDFF,#EEF5FF);
+    min-height:100vh;
+    padding:28px;
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+body::before,
+body::after{
+    content:"";
+    position:fixed;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:-1;
+}
+
+body::before{
+    top:-120px;
+    left:-120px;
+    background:rgba(96,165,250,.18);
+}
+
+body::after{
+    bottom:-180px;
+    right:-140px;
+    background:rgba(191,219,254,.25);
+}
+
+
+/* ---------- NAVBAR ---------- */
+
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(18px);
+
+    padding:18px 24px;
+    border-radius:28px;
+
+    box-shadow:0 15px 40px rgba(37,99,235,.08);
+
+    margin-bottom:32px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.logo-icon{
+    width:56px;
+    height:56px;
+    border-radius:20px;
+
+    display:grid;
+    place-items:center;
+
+    background:linear-gradient(135deg,var(--blue),var(--accent));
+
+    color:white;
+    font-size:26px;
+}
+
+.logo h1{
+    font-size:27px;
+    color:var(--blue);
+}
+
+.logo p{
+    font-size:13px;
+    color:var(--muted);
+}
+
+.back-btn{
+    text-decoration:none;
+    color:var(--blue);
+    font-weight:700;
+}
+
+
+/* ---------- HEADER ---------- */
+
+.header{
+    background:linear-gradient(135deg,#FFFFFF,#EFF6FF);
+
+    padding:36px;
+
+    border-radius:32px;
+
+    box-shadow:0 20px 50px rgba(37,99,235,.08);
+
+    margin-bottom:26px;
+}
+
+.header-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+
+.header h2{
+    font-size:38px;
+    margin-bottom:8px;
+}
+
+.header p{
+    color:var(--muted);
+    line-height:1.6;
+}
+
+.shop-name{
+    background:#DBEAFE;
+    color:#1D4ED8;
+    padding:10px 16px;
+    border-radius:14px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+
+/* ---------- MAIN METRICS ---------- */
+
+.metrics{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+
+    margin-bottom:26px;
+}
+
+.metric{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(16px);
+
+    padding:24px;
+
+    border-radius:26px;
+
+    box-shadow:0 15px 40px rgba(37,99,235,.08);
+
+    transition:.25s ease;
+}
+
+.metric:hover{
+    transform:translateY(-5px);
+    box-shadow:0 22px 45px rgba(37,99,235,.12);
+}
+
+.metric-icon{
+    width:50px;
+    height:50px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:16px;
+
+    font-size:23px;
+
+    margin-bottom:16px;
+}
+
+.blue{
+    background:#DBEAFE;
+}
+
+.green{
+    background:#DCFCE7;
+}
+
+.orange{
+    background:#FEF3C7;
+}
+
+.red{
+    background:#FEE2E2;
+}
+
+.purple{
+    background:#EDE9FE;
+}
+
+.metric-label{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:7px;
+}
+
+.metric-value{
+    font-size:28px;
+    font-weight:800;
+}
+
+
+/* ---------- CONTENT GRID ---------- */
+
+.content-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:22px;
+}
+
+
+/* ---------- PANELS ---------- */
+
+.panel{
+    background:rgba(255,255,255,.84);
+    backdrop-filter:blur(16px);
+
+    padding:26px;
+
+    border-radius:28px;
+
+    box-shadow:0 15px 40px rgba(37,99,235,.08);
+}
+
+.panel h3{
+    font-size:21px;
+    margin-bottom:7px;
+}
+
+.panel-subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:22px;
+}
+
+
+/* ---------- PRODUCTS ---------- */
+
+.product{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:16px 0;
+
+    border-bottom:1px solid #E2E8F0;
+}
+
+.product:last-child{
+    border-bottom:none;
+}
+
+.product-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.product-icon{
+    width:44px;
+    height:44px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:14px;
+
+    background:#EFF6FF;
+
+    font-size:20px;
+}
+
+.product-name{
+    font-weight:700;
+    font-size:14px;
+}
+
+.product-info{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+.product-sales{
+    font-weight:800;
+    color:var(--blue);
+}
+
+
+/* ---------- TRANSACTIONS ---------- */
+
+.transaction{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:15px 0;
+
+    border-bottom:1px solid #E2E8F0;
+}
+
+.transaction:last-child{
+    border-bottom:none;
+}
+
+.transaction-id{
+    font-weight:700;
+    font-size:13px;
+}
+
+.transaction-time{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+.transaction-amount{
+    font-weight:800;
+    color:var(--green);
+}
+
+
+/* ---------- HIGHLIGHTS ---------- */
+
+.highlights{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+
+    margin-top:22px;
+}
+
+.highlight{
+    padding:20px;
+
+    border-radius:22px;
+
+    background:#F8FAFC;
+}
+
+.highlight-title{
+    color:var(--muted);
+    font-size:13px;
+
+    margin-bottom:8px;
+}
+
+.highlight-value{
+    font-size:20px;
+    font-weight:800;
+}
+
+
+/* ---------- EMPTY STATE ---------- */
+
+.empty{
+    text-align:center;
+    padding:30px 10px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+
+/* ---------- FOOTER ---------- */
+
+.footer{
+    text-align:center;
+
+    margin-top:35px;
+
+    color:var(--muted);
+
+    font-size:13px;
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media(max-width:1000px){
+
+    .metrics{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .content-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:650px){
+
+    body{
+        padding:18px;
+    }
+
+    .navbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .header{
+        padding:25px;
+    }
+
+    .header-top{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .header h2{
+        font-size:30px;
+    }
+
+    .metrics{
+        grid-template-columns:1fr;
+    }
+
+    .highlights{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">📊</div>
+
+        <div>
+            <h1>Campus Cart</h1>
+            <p>Financial Analysis</p>
+        </div>
+
+    </div>
+
+    <a href="/shopkeeper" class="back-btn">
+        ← Dashboard
+    </a>
+
+</div>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="header-top">
+
+        <div>
+
+            <h2>Financial Analysis 📈</h2>
+
+            <p>
+                Analyse your shop's sales, revenue, products and transaction performance.
+            </p>
+
+        </div>
+
+        <div class="shop-name">
+            {{ shop_name }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- METRICS -->
+
+<div class="metrics">
+
+
+    <!-- SALES TODAY -->
+
+    <div class="metric">
+
+        <div class="metric-icon green">
+            💰
+        </div>
+
+        <div class="metric-label">
+            Sales Today
+        </div>
+
+        <div class="metric-value">
+            ₹{{ sales_today }}
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL REVENUE -->
+
+    <div class="metric">
+
+        <div class="metric-icon blue">
+            💵
+        </div>
+
+        <div class="metric-label">
+            Total Revenue
+        </div>
+
+        <div class="metric-value">
+            ₹{{ total_revenue }}
+        </div>
+
+    </div>
+
+
+    <!-- QUANTITY SOLD -->
+
+    <div class="metric">
+
+        <div class="metric-icon orange">
+            📦
+        </div>
+
+        <div class="metric-label">
+            Quantity Sold
+        </div>
+
+        <div class="metric-value">
+            {{ quantity_sold }}
+        </div>
+
+    </div>
+
+
+    <!-- PROFIT MARGIN -->
+
+    <div class="metric">
+
+        <div class="metric-icon purple">
+            📈
+        </div>
+
+        <div class="metric-label">
+            Profit Margin
+        </div>
+
+        <div class="metric-value">
+            {{ profit_margin }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="content-grid">
+
+
+    <!-- TOP PRODUCTS -->
+
+    <div class="panel">
+
+        <h3>🔥 Most Purchased Products</h3>
+
+        <p class="panel-subtitle">
+            Products with the highest number of units sold.
+        </p>
+
+
+        {% if top_products %}
+
+            {% for product in top_products %}
+
+            <div class="product">
+
+                <div class="product-left">
+
+                    <div class="product-icon">
+                        🛍️
+                    </div>
+
+                    <div>
+
+                        <div class="product-name">
+                            {{ product.name }}
+                        </div>
+
+                        <div class="product-info">
+                            {{ product.quantity }} units sold
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="product-sales">
+                    ₹{{ product.revenue }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No sales data available yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- RECENT TRANSACTIONS -->
+
+    <div class="panel">
+
+        <h3>🧾 Recent Transactions</h3>
+
+        <p class="panel-subtitle">
+            Latest purchases completed at your shop.
+        </p>
+
+
+        {% if recent_sales %}
+
+            {% for sale in recent_sales %}
+
+            <div class="transaction">
+
+                <div>
+
+                    <div class="transaction-id">
+                        {{ sale.transaction_id }}
+                    </div>
+
+                    <div class="transaction-time">
+                        {{ sale.date }}
+                    </div>
+
+                </div>
+
+                <div class="transaction-amount">
+                    ₹{{ sale.total }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No transactions recorded yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- HIGHLIGHTS -->
+
+<div class="highlights">
+
+
+    <div class="highlight">
+
+        <div class="highlight-title">
+            🔥 Most Purchased Product
+        </div>
+
+        <div class="highlight-value">
+            {{ most_purchased }}
+        </div>
+
+    </div>
+
+
+    <div class="highlight">
+
+        <div class="highlight-title">
+            🔎 Most Searched Product
+        </div>
+
+        <div class="highlight-value">
+            {{ most_searched }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="footer">
+    Campus Cart • VIT Hackathon Prototype
+</div>
+
+
+</body>
+</html>
