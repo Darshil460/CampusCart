@@ -166,34 +166,30 @@ def add_to_list(product_id, shop_id):
 # -----------------------------------
 @app.route("/list")
 def shopping_list():
-
     conn = get_db_connection()
-
     rows = conn.execute("""
-        SELECT
-            cart.id AS cart_id,
-            cart.quantity,
+    SELECT
+        cart.id AS cart_id,
+        cart.shop_id,
+        cart.product_id,
+        products.name AS product_name,
+        shops.name AS shop_name,
+        inventory.price,
+        cart.quantity
 
-            products.name AS product_name,
+    FROM cart
 
-            inventory.price,
+    JOIN products
+        ON cart.product_id = products.id
 
-            shops.name AS shop_name
+    JOIN shops
+        ON cart.shop_id = shops.id
 
-        FROM cart
+    JOIN inventory
+        ON inventory.product_id = cart.product_id
+       AND inventory.shop_id = cart.shop_id
 
-        JOIN products
-            ON cart.product_id = products.id
-
-        JOIN shops
-            ON cart.shop_id = shops.id
-
-        JOIN inventory
-            ON inventory.product_id = cart.product_id
-           AND inventory.shop_id = cart.shop_id
-
-        ORDER BY shops.name, products.name
-    """).fetchall()
+""").fetchall()
 
     conn.close()
 
@@ -206,10 +202,10 @@ def shopping_list():
 
         if shop not in grouped_cart:
             grouped_cart[shop] = {
-                "items": [],
-                "store_total": 0
-            }
-
+            "shop_id": row["shop_id"],  
+            "items": [],
+            "store_total": 0
+        }
         total_price = row["price"] * row["quantity"]
 
         grouped_cart[shop]["items"].append({
@@ -342,8 +338,95 @@ def request_item(product_id, shop_id):
     return redirect(url_for("home"))
 
 
-@app.route("/generate_qr")
-def generate_qr():
+@app.route("/generate_qr/<int:shop_id>")
+def generate_qr(shop_id):
+
+    conn = get_db_connection()
+
+    # Read only THIS shop's cart items
+    rows = conn.execute("""
+        SELECT
+            cart.product_id,
+            cart.shop_id,
+            cart.quantity,
+
+            products.name AS product_name,
+            shops.name AS shop_name,
+
+            inventory.price
+
+        FROM cart
+
+        JOIN products
+            ON cart.product_id = products.id
+
+        JOIN shops
+            ON cart.shop_id = shops.id
+
+        JOIN inventory
+            ON inventory.product_id = cart.product_id
+           AND inventory.shop_id = cart.shop_id
+
+        WHERE cart.shop_id = ?
+
+    """, (shop_id,)).fetchall()
+
+    conn.close()
+
+    if len(rows) == 0:
+        flash("No items found for this shop.")
+        return redirect(url_for("shopping_list"))
+
+    transaction_id = "CC-" + uuid.uuid4().hex[:8].upper()
+
+    shop_name = rows[0]["shop_name"]
+
+    qr_items = []
+    display_items = []
+    grand_total = 0
+
+    for row in rows:
+
+        total = row["price"] * row["quantity"]
+        grand_total += total
+
+        qr_items.append({
+            "product_id": row["product_id"],
+            "product_name": row["product_name"],   # NEW
+            "quantity": row["quantity"]
+        })
+
+        display_items.append({
+            "product_name": row["product_name"],
+            "quantity": row["quantity"],
+            "price": row["price"],
+            "total": total
+        })
+
+    payload = {
+        "transaction_id": transaction_id,
+        "shop_id": shop_id,
+        "shop_name": shop_name,
+        "items": qr_items
+    }
+
+    qr = qrcode.make(json.dumps(payload))
+
+    os.makedirs("static/qrcodes", exist_ok=True)
+
+    filename = transaction_id + ".png"
+
+    qr.save(os.path.join("static", "qrcodes", filename))
+
+    return render_template(
+        "qr.html",
+        transaction_id=transaction_id,
+        shop_name=shop_name,
+        shop_id=shop_id,
+        qr_image=filename,
+        items=display_items,
+        grand_total=grand_total
+    )
 
     conn = get_db_connection()
 
@@ -445,6 +528,7 @@ def confirm_purchase():
     data = request.get_json()
 
     transaction_id = data["transaction_id"]
+    shop_id = data["shop_id"]
     items = data["items"]
 
     conn = get_db_connection()
@@ -454,7 +538,6 @@ def confirm_purchase():
         for item in items:
 
             product_id = item["product_id"]
-            shop_id = item["shop_id"]
             quantity = item["quantity"]
 
             inventory = cursor.execute("""
@@ -482,7 +565,8 @@ def confirm_purchase():
                 INSERT INTO sales
                 (transaction_id, product_id, shop_id, quantity, total_price)
                 VALUES (?, ?, ?, ?, ?)
-            """, (
+            """, 
+            (
                 transaction_id,
                 product_id,
                 shop_id,
@@ -490,7 +574,10 @@ def confirm_purchase():
                 price * quantity
             ))
 
-        cursor.execute("DELETE FROM cart")
+        cursor.execute("""
+            DELETE FROM cart
+            WHERE shop_id = ?
+            """, (shop_id,))
 
         conn.commit()
 
@@ -509,6 +596,97 @@ def confirm_purchase():
 
     finally:
         conn.close()
+
+
+
+@app.route("/inventory/<int:shop_id>")
+def inventory(shop_id):
+
+            conn = get_db_connection()
+
+            shop = conn.execute(
+                "SELECT * FROM shops WHERE id=?",
+                (shop_id,)
+            ).fetchone()
+
+            shops = conn.execute(
+                "SELECT * FROM shops"
+            ).fetchall()
+
+            inventory = conn.execute("""
+                SELECT
+                    inventory.product_id,
+                    inventory.price,
+                    inventory.stock,
+
+                    products.name AS product_name,
+                    products.category
+
+                FROM inventory
+
+                JOIN products
+                    ON inventory.product_id = products.id
+
+                WHERE inventory.shop_id = ?
+
+                ORDER BY products.category, products.name
+            """, (shop_id,)).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "inventory.html",
+                shop=shop,
+                shops=shops,
+                inventory=inventory
+            )
+
+
+@app.route("/update_stock", methods=["POST"])
+def update_stock():
+
+    shop_id = request.form["shop_id"]
+    product_id = request.form["product_id"]
+    stock = request.form["stock"]
+
+    conn = get_db_connection()
+
+    conn.execute("""
+        UPDATE inventory
+        SET stock = ?
+        WHERE shop_id=? AND product_id=?
+    """, (stock, shop_id, product_id))
+
+    conn.commit()
+    conn.close()
+
+    flash("Stock updated successfully.")
+
+    return redirect(url_for("inventory", shop_id=shop_id))
+
+
+
+@app.route("/update_price", methods=["POST"])
+def update_price():
+
+    shop_id = request.form["shop_id"]
+    product_id = request.form["product_id"]
+    price = request.form["price"]
+
+    conn = get_db_connection()
+
+    conn.execute("""
+        UPDATE inventory
+        SET price = ?
+        WHERE shop_id=? AND product_id=?
+    """, (price, shop_id, product_id))
+
+    conn.commit()
+    conn.close()
+
+    flash("Price updated successfully.")
+
+    return redirect(url_for("inventory", shop_id=shop_id))
 # -----------------------------------
 # RUN APP
 # -----------------------------------

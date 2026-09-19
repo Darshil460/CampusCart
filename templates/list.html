@@ -164,9 +164,40 @@
             transform:translateY(-2px);
             box-shadow:0 12px 24px rgba(255,255,255,.25);
         }
+        .store-footer{
+            margin-top:18px;
 
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+        }
 
+        .store-total{
+            font-weight:700;
+            color:#16A34A;
+            font-size:16px;
+        }
 
+        .shop-qr-btn{
+            text-decoration:none;
+            padding:12px 18px;
+            border-radius:999px;
+
+            background:linear-gradient(90deg,#2563EB,#60A5FA);
+            color:white;
+
+            font-weight:700;
+            font-size:14px;
+
+            box-shadow:0 8px 18px rgba(37,99,235,.18);
+            transition:.25s ease;
+        }
+
+        .shop-qr-btn:hover{
+            transform:translateY(-2px);
+        }
 
     </style>
 </head>
@@ -228,8 +259,16 @@
 
             {% endfor %}
 
-            <div style="padding-top:16px; font-weight:700; color:#16a34a;">
-                Store Total — ₹{{ shop["store_total"] }}
+            <div class="store-footer">
+
+                <div class="store-total">
+                    Store Total — ₹{{shop['store_total']}}
+                </div>
+
+                <a href="/generate_qr/{{shop['shop_id']}}" class="shop-qr-btn">
+                    📱 Generate {{shop_name}} QR
+                </a>
+
             </div>
 
         </div>
@@ -238,20 +277,7 @@
         
 
         <!--###STARTS HERE--> 
-        <div class="total">
-
-            <div class="total-info">
-                <span>Grand Total</span>
-                <h2>₹{{ grand_total }}</h2>
-            </div>
-
-            {% if grand_total > 0 %}
-            <a href="/generate_qr" class="qr-btn">
-                📱 Generate Checkout QR
-            </a>
-            {% endif %}
-
-        </div>
+        
         <!-- ##ENDS HERE-->
     {% else %}
 
