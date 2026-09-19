@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Campus Cart QR Scanner</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+
+        :root{
+            --blue:#2563EB;
+            --accent:#60A5FA;
+            --light:#F8FBFF;
+            --text:#0F172A;
+            --muted:#64748B;
+            --green:#16A34A;
+            --red:#DC2626;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Inter",sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            padding:28px;
+            background:linear-gradient(180deg,#FBFDFF,#EEF5FF);
+            color:var(--text);
+            overflow-x:hidden;
+        }
+
+        body::before,
+        body::after{
+            content:"";
+            position:fixed;
+            width:450px;
+            height:450px;
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:-1;
+        }
+
+        body::before{
+            top:-120px;
+            left:-80px;
+            background:rgba(96,165,250,.20);
+        }
+
+        body::after{
+            bottom:-150px;
+            right:-100px;
+            background:rgba(191,219,254,.25);
+        }
+
+        /* ---------- TOP BAR ---------- */
+
+        .navbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:18px 24px;
+
+            border-radius:28px;
+
+            background:rgba(255,255,255,.82);
+            backdrop-filter:blur(18px);
+
+            box-shadow:0 15px 40px rgba(37,99,235,.08);
+
+            margin-bottom:30px;
+        }
+
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:16px;
+        }
+
+        .logo-icon{
+            width:58px;
+            height:58px;
+
+            border-radius:20px;
+
+            display:grid;
+            place-items:center;
+
+            color:white;
+            font-size:26px;
+
+            background:linear-gradient(135deg,var(--blue),var(--accent));
+        }
+
+        .logo h1{
+            color:var(--blue);
+            font-size:28px;
+        }
+
+        .logo p{
+            color:var(--muted);
+            font-size:13px;
+            margin-top:3px;
+        }
+
+        .back-btn{
+            text-decoration:none;
+            color:var(--blue);
+            font-weight:700;
+        }
+
+        /* ---------- HERO ---------- */
+
+        .hero{
+            text-align:center;
+            margin-bottom:28px;
+        }
+
+        .hero h2{
+            font-size:44px;
+            margin-bottom:10px;
+        }
+
+        .hero p{
+            color:var(--muted);
+            font-size:16px;
+        }
+
+        /* ---------- LAYOUT ---------- */
+
+        .container{
+            display:grid;
+            grid-template-columns:1.2fr .8fr;
+            gap:24px;
+        }
+
+        .panel{
+            background:rgba(255,255,255,.82);
+            backdrop-filter:blur(18px);
+
+            border-radius:30px;
+
+            padding:24px;
+
+            box-shadow:0 20px 45px rgba(37,99,235,.08);
+        }
+
+        /* ---------- STATUS ---------- */
+
+        .status{
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+
+            padding:10px 16px;
+
+            background:#DBEAFE;
+            color:var(--blue);
+
+            border-radius:999px;
+
+            font-size:13px;
+            font-weight:700;
+
+            margin-bottom:20px;
+        }
+
+        .status.success{
+            background:#DCFCE7;
+            color:#166534;
+        }
+
+        /* ---------- CAMERA ---------- */
+
+        #reader{
+            border-radius:24px;
+            overflow:hidden;
+        }
+
+        #scan-result{
+            display:none;
+            margin-top:20px;
+
+            background:#EFF6FF;
+            padding:18px;
+            border-radius:18px;
+
+            font-size:14px;
+            color:var(--blue);
+
+            word-break:break-word;
+        }
+
+        /* ---------- PURCHASE PREVIEW ---------- */
+
+        .preview-title{
+            font-size:22px;
+            margin-bottom:20px;
+        }
+
+        .items{
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+
+        .item{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            background:#F8FBFF;
+
+            padding:16px 18px;
+
+            border-radius:18px;
+        }
+
+        .item-name{
+            font-weight:600;
+            margin-bottom:5px;
+        }
+
+        .shop{
+            color:var(--muted);
+            font-size:13px;
+        }
+
+        .badge{
+            background:#DBEAFE;
+            color:var(--blue);
+
+            padding:5px 10px;
+
+            border-radius:999px;
+
+            font-size:12px;
+            font-weight:700;
+        }
+
+        .total-card{
+            margin-top:24px;
+
+            background:linear-gradient(135deg,var(--blue),var(--accent));
+            color:white;
+
+            border-radius:26px;
+
+            padding:22px;
+        }
+
+        .total-card small{
+            opacity:.8;
+        }
+
+        .total-card h2{
+            font-size:34px;
+            margin-top:8px;
+        }
+
+        .confirm-btn{
+            display:none;
+
+            width:100%;
+            margin-top:22px;
+
+            border:none;
+            cursor:pointer;
+
+            padding:15px;
+
+            border-radius:18px;
+
+            font-size:15px;
+            font-weight:700;
+
+            color:white;
+
+            background:linear-gradient(90deg,#16A34A,#22C55E);
+        }
+
+        .confirm-btn:hover{
+            opacity:.95;
+        }
+
+        .note{
+            margin-top:18px;
+            font-size:13px;
+            color:var(--muted);
+            line-height:1.6;
+        }
+
+        @media(max-width:900px){
+
+            .container{
+                grid-template-columns:1fr;
+            }
+
+            .hero h2{
+                font-size:34px;
+            }
+
+            .navbar{
+                flex-direction:column;
+                align-items:flex-start;
+                gap:18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <!-- ================= NAVBAR ================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">📷</div>
+
+        <div>
+            <h1>Campus Cart Scanner</h1>
+            <p>Shopkeeper Checkout Interface</p>
+        </div>
+
+    </div>
+
+    <a href="/shopkeeper" class="back-btn">← Back to Dashboard</a>
+
+</div>
+
+
+<!-- ================= HERO ================= -->
+
+<div class="hero">
+
+    <h2>Scan Student Checkout QR</h2>
+
+    <p>
+        Scan the student's Campus Cart QR to verify items before completing the purchase.
+    </p>
+
+</div>
+
+
+<!-- ================= MAIN LAYOUT ================= -->
+
+<div class="container">
+
+
+    <!-- ========= CAMERA PANEL ========= -->
+
+    <div class="panel">
+
+        <div id="status" class="status">
+            📡 Waiting for Campus Cart QR...
+        </div>
+
+        <div id="reader"></div>
+
+        <div id="scan-result"></div>
+
+    </div>
+
+
+
+    <!-- ========= PURCHASE PREVIEW ========= -->
+
+    <div class="panel">
+
+        <h3 class="preview-title">Purchase Preview</h3>
+
+        <div id="items" class="items">
+
+            <div class="item">
+
+                <div>
+
+                    <div class="item-name">Waiting for QR...</div>
+
+                    <div class="shop">
+                        Scan a student's QR code to view purchased items.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TOTAL CARD -->
+
+        <div class="total-card">
+
+            <small>Total Items</small>
+
+            <h2 id="total-items">0</h2>
+
+        </div>
+
+
+
+        <!-- CONFIRM BUTTON -->
+
+        <button id="confirm-btn" class="confirm-btn">
+
+            ✅ Confirm Purchase
+
+        </button>
+
+
+        <div class="note">
+
+            Confirming this purchase will:
+
+            <br><br>
+
+            • Reduce stock from inventory.
+
+            <br>
+
+            • Record the sale in the <b>Sales</b> table.
+
+            <br>
+
+            • Empty the student's shopping cart.
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+let scannedPayload = null;
+let html5QrCode;
+
+// ----------------------------
+// Render Purchase Preview
+// ----------------------------
+
+function renderPreview(payload){
+
+    const itemsContainer = document.getElementById("items");
+
+    itemsContainer.innerHTML = "";
+
+    let totalItems = 0;
+
+    payload.items.forEach(item => {
+
+        totalItems += item.quantity;
+
+        itemsContainer.innerHTML += `
+            <div class="item">
+
+                <div>
+
+                    <div class="item-name">
+                        Product ID #${item.product_id}
+                    </div>
+
+                    <div class="shop">
+                        Shop ID ${item.shop_id}
+                    </div>
+
+                </div>
+
+                <div class="badge">
+                    × ${item.quantity}
+                </div>
+
+            </div>
+        `;
+
+    });
+
+    document.getElementById("total-items").innerText = totalItems;
+
+    document.getElementById("confirm-btn").style.display = "block";
+
+}
+
+
+// ----------------------------
+// QR Successfully Read
+// ----------------------------
+
+function onScanSuccess(decodedText){
+
+    html5QrCode.stop();
+
+    const status = document.getElementById("status");
+
+    status.classList.add("success");
+    status.innerHTML = "✅ QR Successfully Read";
+
+    const result = document.getElementById("scan-result");
+
+    result.style.display = "block";
+
+    try{
+
+        scannedPayload = JSON.parse(decodedText);
+
+        result.innerHTML = `
+            <strong>Transaction ID</strong><br>
+            ${scannedPayload.transaction_id}
+        `;
+
+        renderPreview(scannedPayload);
+
+    }
+
+    catch(error){
+
+        status.innerHTML = "❌ Invalid Campus Cart QR";
+
+        result.style.display = "block";
+
+        result.innerHTML = `
+            This QR does not belong to Campus Cart.
+        `;
+
+    }
+
+}
+
+
+// ----------------------------
+// Start Webcam Scanner
+// ----------------------------
+
+html5QrCode = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras()
+
+.then(cameras => {
+
+    if(cameras.length){
+
+        html5QrCode.start(
+
+            cameras[0].id,
+
+            {
+                fps:10,
+                qrbox:{
+                    width:250,
+                    height:250
+                }
+            },
+
+            onScanSuccess
+
+        );
+
+    }
+
+    else{
+
+        document.getElementById("status").innerHTML =
+            "❌ No camera found.";
+
+    }
+
+})
+
+.catch(err => {
+
+    document.getElementById("status").innerHTML =
+        "❌ Camera access denied.";
+
+});
+
+
+// ----------------------------
+// Confirm Purchase
+// ----------------------------
+
+document.getElementById("confirm-btn")
+
+.addEventListener("click", () => {
+
+    if(!scannedPayload){
+        return;
+    }
+
+    fetch("/confirm_purchase",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(scannedPayload)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.message);
+
+        window.location.href="/shopkeeper";
+
+    })
+
+    .catch(error => {
+
+        alert("Something went wrong while completing the purchase.");
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

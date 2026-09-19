@@ -76,6 +76,98 @@
             font-size: 22px;
             font-weight: 700;
         }
+        .total{
+            background:linear-gradient(135deg,#2563EB,#60A5FA);
+            color:white;
+            padding:24px;
+            border-radius:28px;
+            margin-top:30px;
+            box-shadow:0 20px 35px rgba(37,99,235,.22);
+        }
+
+        .total-info span{
+            opacity:.8;
+            font-size:14px;
+        }  
+
+        .total-info h2{
+            margin-top:8px;
+            font-size:34px;
+            font-weight:800;
+        }
+
+        .qr-btn{
+            margin-top:22px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:10px;
+
+            text-decoration:none;
+            color:#2563EB;
+
+            background:white;
+            padding:14px 20px;
+            border-radius:18px;
+
+            font-weight:700;
+            font-size:15px;
+
+            transition:.25s ease;
+        }
+
+        .qr-btn:hover{
+            transform:translateY(-2px);
+            box-shadow:0 12px 24px rgba(255,255,255,.22);
+        }
+        .total{
+            background:linear-gradient(135deg,#2563EB,#60A5FA);
+            color:white;
+            padding:24px;
+            border-radius:28px;
+            margin-top:30px;
+            box-shadow:0 20px 35px rgba(37,99,235,.22);
+        }
+
+        .total-info span{
+            opacity:.8;
+            font-size:14px;
+        }
+
+        .total-info h2{
+            margin-top:6px;
+            font-size:34px;
+            font-weight:800;
+        }
+
+        .qr-btn{
+            margin-top:22px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:10px;
+
+            background:white;
+            color:#2563EB;
+            text-decoration:none;
+
+            padding:14px 18px;
+            border-radius:18px;
+
+            font-weight:700;
+            font-size:15px;
+
+            transition:.25s ease;
+        }
+
+        .qr-btn:hover{
+            transform:translateY(-2px);
+            box-shadow:0 12px 24px rgba(255,255,255,.25);
+        }
+
+
+
+
     </style>
 </head>
 
@@ -143,11 +235,24 @@
         </div>
 
         {% endfor %}
+        
 
+        <!--###STARTS HERE--> 
         <div class="total">
-            Grand Total — ₹{{ grand_total }}
-        </div>
 
+            <div class="total-info">
+                <span>Grand Total</span>
+                <h2>₹{{ grand_total }}</h2>
+            </div>
+
+            {% if grand_total > 0 %}
+            <a href="/generate_qr" class="qr-btn">
+                📱 Generate Checkout QR
+            </a>
+            {% endif %}
+
+        </div>
+        <!-- ##ENDS HERE-->
     {% else %}
 
         <div class="store" style="text-align:center;">

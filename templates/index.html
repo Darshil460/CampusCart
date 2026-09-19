@@ -46,12 +46,79 @@ body:after{bottom:-160px;right:-120px;background:rgba(191,219,254,.25)}
 .qty-number{min-width:20px;text-align:center;font-weight:700;color:var(--primary)}
 .hidden{display:none}
 @media(max-width:768px){body{padding:18px}.hero h2{font-size:34px}.navbar{flex-direction:column;align-items:flex-start;gap:16px}.shop{flex-direction:column;align-items:flex-start}.shop-actions{width:100%;justify-content:space-between}}
+.product-image{
+    width:100%;
+    height:180px;
+    object-fit:contain;
+
+    background:linear-gradient(180deg,#F8FBFF,#EFF6FF);
+    border-radius:20px;
+
+    padding:18px;
+    margin:18px 0 20px;
+
+    box-shadow:inset 0 0 0 1px rgba(37,99,235,.05);
+    transition:.25s ease;
+}
+
+.card:hover .product-image{
+    transform:scale(1.05);
+}
+.card{
+    transition:0.25s ease;
+}
+.mode-btn{
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:14px;
+    transition:.25s ease;
+}
+
+.shopkeeper-mode{
+    background:white;
+    color:#2563EB;
+    border:1px solid #DBEAFE;
+    box-shadow:0 8px 18px rgba(37,99,235,.08);
+}
+
+.shopkeeper-mode:hover{
+    background:#EFF6FF;
+    transform:translateY(-2px);
+}
+.nav-buttons{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-shrink:0;
+}
 </style>
 </head>
 <body>
 <div class="navbar">
-<div class="logo"><div class="logo-icon">🛍️</div><div><h1>Campus Cart</h1><p>VIT's Smart Shopping Companion</p></div></div>
-<a href="/list" class="list-btn">🛒 My Shopping List</a>
+
+    <div class="logo">
+        <div class="logo-icon">🛒</div>
+
+        <div>
+            <h1>Campus Cart</h1>
+            <p>VIT Campus Shopping Assistant</p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+
+        <a href="/shopkeeper" class="mode-btn shopkeeper-mode">
+            🏪 Shopkeeper Mode
+        </a>
+
+        <a href="/list" class="list-btn">
+            🛒 My Shopping List
+        </a>
+
+    </div>
+
 </div>
 
 <section class="hero">
@@ -74,45 +141,99 @@ body:after{bottom:-160px;right:-120px;background:rgba(191,219,254,.25)}
 {% endwith %}
 
 <div class="grid" id="products">
-{% for product in products %}
-<div class="card product-card">
-<div class="pill">{{ product.category }}</div>
-<h3>{{ product.product_name }}</h3>
 
-{% for shop in product.shops %}
-<div class="shop">
-<div>
-<div class="shop-name">{{ shop.shop_name }}</div>
-{% if shop.stock > 0 %}
-<div class="stock available">● In Stock</div>
-{% else %}
-<div class="stock unavailable">● Out of Stock</div>
-{% endif %}
-</div>
+    {% for product in products %}
 
-{% if shop.stock > 0 %}
-<div class="shop-actions">
-<div class="price">₹{{ shop.price }}</div>
+    <div class="card product-card">
 
-{% if shop.quantity == 0 %}
-<a href="/add/{{ shop.product_id }}/{{ shop.shop_id }}" class="add-btn">+ Add to List</a>
-{% else %}
-<div class="quantity-box">
-<a href="/decrease/{{ shop.cart_id }}" class="qty-btn">−</a>
-<div class="qty-number">{{ shop.quantity }}</div>
-<a href="/increase/{{ shop.cart_id }}" class="qty-btn">+</a>
-</div>
-{% endif %}
+        <!-- Category -->
+        <div class="top">
+            <div class="pill">{{ product.category }}</div>
+        </div>
 
-</div>
-{% else %}
-<a href="/request/{{ shop.product_id }}/{{ shop.shop_id }}" class="request-btn">Request Item</a>
-{% endif %}
-</div>
-{% endfor %}
+        <!-- Product Image -->
+        <img
+            src="{{ url_for('static', filename='images/' + product.image) }}"
+            alt="{{ product.product_name }}"
+            class="product-image"
+        >
 
-</div>
-{% endfor %}
+        <!-- Product Name -->
+        <h3>{{ product.product_name }}</h3>
+
+        <!-- Stores -->
+        {% for shop in product.shops %}
+
+        <div class="shop">
+
+            <div>
+                <div class="shop-name">{{ shop.shop_name }}</div>
+
+                {% if shop.stock > 0 %}
+                    <div class="stock available">● In Stock</div>
+                {% else %}
+                    <div class="stock unavailable">● Out of Stock</div>
+                {% endif %}
+            </div>
+
+            {% if shop.stock > 0 %}
+
+            <div class="shop-actions">
+
+                <div class="price">₹{{ shop.price }}</div>
+
+                {% if shop.quantity == 0 %}
+
+                    <a
+                        href="/add/{{ shop.product_id }}/{{ shop.shop_id }}"
+                        class="add-btn">
+                        + Add to List
+                    </a>
+
+                {% else %}
+
+                    <div class="quantity-box">
+
+                        <a
+                            href="/decrease/{{ shop.cart_id }}"
+                            class="qty-btn">
+                            −
+                        </a>
+
+                        <div class="qty-number">
+                            {{ shop.quantity }}
+                        </div>
+
+                        <a
+                            href="/increase/{{ shop.cart_id }}"
+                            class="qty-btn">
+                            +
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            {% else %}
+
+                <a
+                    href="/request/{{ shop.product_id }}/{{ shop.shop_id }}"
+                    class="request-btn">
+                    Request Item
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endfor %}
+
 </div>
 
 <script>

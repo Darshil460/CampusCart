@@ -1,8 +1,22 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    request,
+    jsonify
+)
+
 import sqlite3
+import qrcode
+import json
+import uuid
+import os   
 
 app = Flask(__name__)
 app.secret_key = "campus_cart_secret_key"
+
 
 
 # -----------------------------------
@@ -79,7 +93,28 @@ def home():
                 "quantity": row["quantity"],
                 "cart_id": row["cart_id"]
             })
+            # Product image mapping
+            product_images = {
+                "Protein Bar": "protein_bar.png",
+                "Mirinda": "mirinda.png",
+                "Sparkling Water - Cranberry": "sparkling_water.png",
+                "Goli Soda": "goli_soda.png",
+                "Chicken Fried Roll": "chicken_roll.png",
+                "Scientific Calculator": "calculator.png",
+                "Veg Puff": "veg_puff.png",
+                "Hand Wash": "hand_wash.png",
+                "Shampoo": "shampoo.png",
+                "Notebook": "notebook.png",
+                "Pen": "pen.png",
+                "Lays": "lays.png",
+                "Diet Coke": "diet_coke.png"
+            }
 
+            for product in products.values():
+                product["image"] = product_images.get(
+                    product["product_name"],
+                    "default.png"
+                )
     return render_template(
         "index.html",
         products=products.values()
@@ -307,6 +342,173 @@ def request_item(product_id, shop_id):
     return redirect(url_for("home"))
 
 
+@app.route("/generate_qr")
+def generate_qr():
+
+    conn = get_db_connection()
+
+    # Read everything currently in the shopping cart
+    rows = conn.execute("""
+        SELECT
+            cart.product_id,
+            cart.shop_id,
+            cart.quantity,
+
+            products.name AS product_name,
+            shops.name AS shop_name,
+
+            inventory.price
+
+        FROM cart
+
+        JOIN products
+            ON cart.product_id = products.id
+
+        JOIN shops
+            ON cart.shop_id = shops.id
+
+        JOIN inventory
+            ON inventory.product_id = cart.product_id
+           AND inventory.shop_id = cart.shop_id
+    """).fetchall()
+
+    conn.close()
+
+    # Empty cart protection
+    if len(rows) == 0:
+        flash("Your shopping list is empty.")
+        return redirect(url_for("shopping_list"))
+
+    transaction_id = "CC-" + uuid.uuid4().hex[:8].upper()
+
+    qr_items = []
+    display_items = []
+
+    grand_total = 0
+
+    for row in rows:
+
+        total = row["price"] * row["quantity"]
+        grand_total += total
+
+        qr_items.append({
+            "product_id": row["product_id"],
+            "shop_id": row["shop_id"],
+            "quantity": row["quantity"]
+        })
+
+        display_items.append({
+            "product_name": row["product_name"],
+            "shop_name": row["shop_name"],
+            "quantity": row["quantity"],
+            "price": row["price"],
+            "total": total
+        })
+
+    payload = {
+        "transaction_id": transaction_id,
+        "items": qr_items
+    }
+
+    # Make QR image
+    qr = qrcode.make(json.dumps(payload))
+
+    os.makedirs("static/qrcodes", exist_ok=True)
+
+    qr_filename = f"{transaction_id}.png"
+
+    qr_path = os.path.join("static", "qrcodes", qr_filename)
+
+    qr.save(qr_path)
+
+    return render_template(
+        "qr.html",
+        transaction_id=transaction_id,
+        qr_image=qr_filename,
+        items=display_items,
+        grand_total=grand_total
+    )
+
+@app.route("/shopkeeper")
+def shopkeeper():
+    return render_template("shopkeeper.html")
+
+
+@app.route("/scanner")
+def scanner():
+    return render_template("scanner.html")
+
+
+@app.route("/confirm_purchase", methods=["POST"])
+def confirm_purchase():
+
+    data = request.get_json()
+
+    transaction_id = data["transaction_id"]
+    items = data["items"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        for item in items:
+
+            product_id = item["product_id"]
+            shop_id = item["shop_id"]
+            quantity = item["quantity"]
+
+            inventory = cursor.execute("""
+                SELECT price, stock
+                FROM inventory
+                WHERE product_id=? AND shop_id=?
+            """, (product_id, shop_id)).fetchone()
+
+            if inventory is None:
+                raise Exception("Inventory item not found.")
+
+            price = inventory["price"]
+            stock = inventory["stock"]
+
+            if stock < quantity:
+                raise Exception("Not enough stock available.")
+
+            cursor.execute("""
+                UPDATE inventory
+                SET stock = stock - ?
+                WHERE product_id=? AND shop_id=?
+            """, (quantity, product_id, shop_id))
+
+            cursor.execute("""
+                INSERT INTO sales
+                (transaction_id, product_id, shop_id, quantity, total_price)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                transaction_id,
+                product_id,
+                shop_id,
+                quantity,
+                price * quantity
+            ))
+
+        cursor.execute("DELETE FROM cart")
+
+        conn.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Purchase completed successfully! 🎉"
+        })
+
+    except Exception as e:
+        conn.rollback()
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 400
+
+    finally:
+        conn.close()
 # -----------------------------------
 # RUN APP
 # -----------------------------------

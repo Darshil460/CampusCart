@@ -149,6 +149,28 @@ cursor.executemany(
     inventory
 )
 
+# -----------------------------
+# SALES TABLE
+# -----------------------------
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    transaction_id TEXT NOT NULL,
+
+    product_id INTEGER NOT NULL,
+    shop_id INTEGER NOT NULL,
+
+    quantity INTEGER NOT NULL,
+    total_price REAL NOT NULL,
+
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(product_id) REFERENCES products(id),
+    FOREIGN KEY(shop_id) REFERENCES shops(id)
+)
+""")
+
 # Save changes
 conn.commit()
 conn.close()
