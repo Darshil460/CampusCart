@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Cart • Student Requests</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Inter",sans-serif;
+}
+
+body{
+    background:#F8FBFF;
+    color:#0F172A;
+    padding:28px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+
+    background:white;
+    padding:24px 30px;
+    border-radius:24px;
+    box-shadow:0 10px 25px rgba(37,99,235,.08);
+}
+
+.header h1{
+    color:#2563EB;
+}
+
+.header p{
+    color:#64748B;
+    margin-top:4px;
+}
+
+.back-btn{
+    text-decoration:none;
+    background:#2563EB;
+    color:white;
+    padding:12px 20px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+.summary{
+    background:white;
+    padding:22px 28px;
+    border-radius:20px;
+    margin-bottom:24px;
+    box-shadow:0 10px 20px rgba(37,99,235,.05);
+}
+
+.summary h2{
+    color:#2563EB;
+    font-size:18px;
+}
+
+.summary .count{
+    font-size:42px;
+    font-weight:800;
+    margin-top:8px;
+}
+
+.request-card{
+    background:white;
+    border-radius:20px;
+    padding:22px 24px;
+    margin-bottom:18px;
+    box-shadow:0 8px 20px rgba(37,99,235,.06);
+}
+
+.top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.product{
+    font-size:22px;
+    font-weight:700;
+}
+
+.shop{
+    color:#2563EB;
+    font-weight:600;
+}
+
+.category{
+    color:#64748B;
+    margin-top:4px;
+    font-size:14px;
+}
+
+.badge{
+    background:#DBEAFE;
+    color:#1D4ED8;
+    padding:8px 14px;
+    border-radius:999px;
+    font-weight:700;
+}
+
+.bottom-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+    flex-wrap:wrap;
+    gap:14px;
+}
+
+.fulfill-btn{
+    border:none;
+    background:#16A34A;
+    color:white;
+    padding:12px 18px;
+    border-radius:999px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.fulfill-btn:hover{
+    background:#15803D;
+}
+
+.flash{
+    background:#DCFCE7;
+    color:#166534;
+    padding:14px 18px;
+    border-radius:14px;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+.empty{
+    background:white;
+    padding:60px;
+    border-radius:24px;
+    text-align:center;
+    box-shadow:0 10px 20px rgba(37,99,235,.05);
+}
+
+.empty h2{
+    color:#2563EB;
+    margin-bottom:10px;
+}
+
+.shop-selector{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.shop-selector select{
+    padding:10px 14px;
+    border:1px solid #D1D5DB;
+    border-radius:10px;
+    background:white;
+    font-size:14px;
+}
+
+.shop-selector button{
+    background:#2563EB;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.shop-selector button:hover{
+    background:#1D4ED8;
+}
+
+</style>
+</head>
+
+<script>
+function changeShop(){
+
+    const shopId = document.getElementById("shopSelect").value;
+
+    window.location.href = "/requests/" + shopId;
+
+}
+</script>
+
+<body>
+
+<div class="header">
+
+    <div>
+        <h1>🔔 Student Requests</h1>
+        <p>Items requested because they were unavailable.</p>
+    </div>
+
+    <a href="/shopkeeper" class="back-btn">
+        ← Shopkeeper Dashboard
+    </a>
+
+</div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="flash">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="summary">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;">
+
+        <div>
+            <h2>{{ shop["name"] }} Requests</h2>
+            <div class="count">{{ requests|length }}</div>
+        </div>
+
+        <div class="shop-selector">
+
+            <select id="shopSelect">
+
+                {% for shop_item in shops %}
+
+                <option
+                    value="{{ shop_item['id'] }}"
+                    {% if shop_item['id'] == shop['id'] %}selected{% endif %}
+                >
+                    {{ shop_item['name'] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <button onclick="changeShop()">
+                Switch Shop
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if requests %}
+
+    {% for request in requests %}
+
+    <div class="request-card">
+
+        <div class="top-row">
+
+            <div>
+
+                <div class="product">
+                    {{ request["product_name"] }}
+                </div>
+
+                <div class="shop">
+                    🏪 {{ request["shop_name"] }}
+                </div>
+
+                <div class="category">
+                    {{ request["category"] }}
+                </div>
+
+            </div>
+
+            <div class="badge">
+                {{ request["request_count"] }} Requests
+            </div>
+
+        </div>
+
+        <div class="bottom-row">
+
+            <text weight=medium color="#64748B">
+                Product ID: {{ request["product_id"] }}
+            </text>
+
+            <form action="/fulfill_request" method="POST">
+
+                <input
+                    type="hidden"
+                    name="shop_id"
+                    value="{{ request['shop_id'] }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="product_id"
+                    value="{{ request['product_id'] }}"
+                >
+
+                <button class="fulfill-btn" type="submit">
+                    ✅ Mark as read
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<div class="empty">
+    <h2>🎉 No Pending Requests</h2>
+    <p>All requested products have been fulfilled.</p>
+</div>
+
+{% endif %}
+
+</body>
+</html>

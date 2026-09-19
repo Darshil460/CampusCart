@@ -687,6 +687,80 @@ def update_price():
     flash("Price updated successfully.")
 
     return redirect(url_for("inventory", shop_id=shop_id))
+
+@app.route("/requests/<int:shop_id>")
+def requests_page(shop_id):
+
+    conn = get_db_connection()
+
+    shop = conn.execute(
+        "SELECT * FROM shops WHERE id=?",
+        (shop_id,)
+    ).fetchone()
+
+    shops = conn.execute(
+        "SELECT * FROM shops"
+    ).fetchall()
+
+    requests = conn.execute("""
+        SELECT
+            requests.shop_id,
+            requests.product_id,
+            COUNT(*) AS request_count,
+
+            shops.name AS shop_name,
+            products.name AS product_name,
+            products.category
+
+        FROM requests
+
+        JOIN shops
+            ON requests.shop_id = shops.id
+
+        JOIN products
+            ON requests.product_id = products.id
+
+        WHERE requests.shop_id = ?
+
+        GROUP BY requests.shop_id, requests.product_id
+
+        ORDER BY request_count DESC
+    """, (shop_id,)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "requests.html",
+        requests=requests,
+        shop=shop,
+        shops=shops
+    )
+
+@app.route("/fulfill_request", methods=["POST"])
+def fulfill_request():
+
+    shop_id = request.form["shop_id"]
+    product_id = request.form["product_id"]
+
+    conn = get_db_connection()
+
+    # Delete all requests for this product from this shop
+    conn.execute("""
+        DELETE FROM requests
+        WHERE shop_id = ? AND product_id = ?
+    """, (shop_id, product_id))
+
+    conn.commit()
+    conn.close()
+
+    flash("Request marked as fulfilled.")
+
+    return redirect(
+    url_for("requests_page", shop_id=shop_id)
+    )
+
+
+
 # -----------------------------------
 # RUN APP
 # -----------------------------------

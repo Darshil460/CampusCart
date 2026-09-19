@@ -42,6 +42,24 @@ CREATE TABLE IF NOT EXISTS inventory (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS purchase_prices (
+
+    shop_id INTEGER,
+    product_id INTEGER,
+
+    vendor_price REAL NOT NULL,
+
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (shop_id, product_id),
+
+    FOREIGN KEY(shop_id) REFERENCES shops(id),
+    FOREIGN KEY(product_id) REFERENCES products(id)
+
+)
+""")
+
 # -----------------------------
 # REQUESTS TABLE (NEW)
 # -----------------------------
@@ -115,6 +133,37 @@ cursor.executemany(
     products
 )
 
+purchase_data = [
+
+    # ---------------- ENZO ----------------
+    (1, 1, 38),   # Protein Bar
+    (1, 2, 26),   # Mirinda
+    (1, 3, 29),   # Paper Boat Cranberry
+    (1, 4, 18),   # Goli Soda
+    (1, 5, 42),   # Chicken Fried Roll
+    (1, 7, 14),   # Veg Puff
+    (1, 9, 95),   # Shampoo
+
+    # ---------------- BALAJI ----------------
+    (2, 1, 39),
+    (2, 5, 44),
+    (2, 6, 280),  # Calculator
+    (2,10, 42),   # Notebook
+    (2,11, 6),    # Pen
+
+    # ---------------- Q BLOCK ----------------
+    (3, 1, 37),
+    (3, 5, 41),
+    (3, 7, 15),   # Veg Puff
+    (3, 8, 48)    # Hand Wash
+
+]
+
+cursor.executemany("""
+INSERT OR REPLACE INTO purchase_prices
+(shop_id, product_id, vendor_price)
+VALUES (?, ?, ?)
+""", purchase_data)
 # =====================================================
 # INSERT INVENTORY
 # =====================================================
